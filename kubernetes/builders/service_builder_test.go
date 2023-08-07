@@ -36,9 +36,9 @@ func TestBuildServiceClusterIP(t *testing.T) {
 
 func TestBuildServiceExternalName(t *testing.T) {
 	service := initService()
-	service.Type = "ExternalName"
-	service.ExternalName = "my-service"
-	buildedService, _ := service.Build()
+	buildedService, _ := service.SetExternalName("my-service").
+		SetType("ExternalName").
+		Build()
 	assert.Equal(t, "my-service", buildedService.Name)
 	assert.Equal(t, apiv1.ServiceTypeExternalName, buildedService.Spec.Type)
 	assert.Equal(t, "my-service", buildedService.Spec.ExternalName)
@@ -59,14 +59,14 @@ func TestServiceEmptyValue(t *testing.T) {
 
 func TestServiceToYaml(t *testing.T) {
 	service := initService()
-	service.Selector = map[string]string{"service": "my-service"}
 	ports := builders.Ports{
 		Protocol:   "TCP",
 		Port:       80,
 		TargetPort: intstr.FromInt(8080),
 	}
-	service.AddPorts(ports.Build())
-	service.Build()
+	service.SetSelector(map[string]string{"service": "my-service"}).
+		AddPorts(ports.Build()).
+		Build()
 	yamlService := service.ToYaml()
 	interfaceResult := map[string]interface{}(
 		map[string]interface{}{

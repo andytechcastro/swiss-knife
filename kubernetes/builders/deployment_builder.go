@@ -27,38 +27,45 @@ func NewDeploymentBuilder() *Deployment {
 }
 
 // SetName Set name for deployment
-func (d *Deployment) SetName(name string) {
+func (d *Deployment) SetName(name string) *Deployment {
 	d.Name = name
+	return d
 }
 
 // SetNamespace Set namespace for deployment
-func (d *Deployment) SetNamespace(namespace string) {
+func (d *Deployment) SetNamespace(namespace string) *Deployment {
 	d.Namespace = namespace
+	return d
 }
 
 // AddContainer Add new container to deployment
-func (d *Deployment) AddContainer(container apiv1.Container) {
+func (d *Deployment) AddContainer(container apiv1.Container) *Deployment {
 	d.Containers = append(d.Containers, container)
+	return d
 }
 
 // SetReplicas Set replicas for deployment
-func (d *Deployment) SetReplicas(replicas int32) {
+func (d *Deployment) SetReplicas(replicas int32) *Deployment {
 	d.Replicas = &replicas
+	return d
 }
 
 // SetLabels Set labels for deployment
-func (d *Deployment) SetLabels(labels map[string]string) {
+func (d *Deployment) SetLabels(labels map[string]string) *Deployment {
 	d.Labels = labels
+	return d
 }
 
 // SetAnnotations Set Annotations for deployment
-func (d *Deployment) SetAnnotations(annotations map[string]string) {
+func (d *Deployment) SetAnnotations(annotations map[string]string) *Deployment {
 	d.Annotations = annotations
+	return d
 }
 
 // SetMatchLabels Set match labels
-func (d *Deployment) SetMatchLabels(matchLabels map[string]string) {
+func (d *Deployment) SetMatchLabels(matchLabels map[string]string) *Deployment {
 	d.MatchLabels = matchLabels
+	return d
 }
 
 // Build Build de deployment interface
@@ -90,7 +97,7 @@ func (d *Deployment) Build() *appsv1.Deployment {
 		},
 	}
 	d.Deployment = deployment
-	return deployment
+	return d.Deployment
 }
 
 // ToYaml convert deployment struct to kubernetes yaml

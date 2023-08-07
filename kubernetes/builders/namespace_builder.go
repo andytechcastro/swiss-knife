@@ -22,18 +22,21 @@ func NewNamespaceBuilder() *Namespace {
 }
 
 // SetName set name of a namespace
-func (n *Namespace) SetName(name string) {
+func (n *Namespace) SetName(name string) *Namespace {
 	n.Name = name
+	return n
 }
 
 // SetLabels set labels of a namespace
-func (n *Namespace) SetLabels(labels map[string]string) {
+func (n *Namespace) SetLabels(labels map[string]string) *Namespace {
 	n.Labels = labels
+	return n
 }
 
 // SetAnnotations sets annotations of a namespace
-func (n *Namespace) SetAnnotations(annotations map[string]string) {
+func (n *Namespace) SetAnnotations(annotations map[string]string) *Namespace {
 	n.Annotations = annotations
+	return n
 }
 
 // Build build a namespace
@@ -50,7 +53,7 @@ func (n *Namespace) Build() *apiv1.Namespace {
 		},
 	}
 	n.Namespace = namespace
-	return namespace
+	return n.Namespace
 }
 
 // ToYaml conver namespace struct to kubernetes yaml

@@ -21,16 +21,17 @@ func initServices() *actions.Actions {
 	objects := []runtime.Object{}
 	for name, namespace := range info {
 		service := builders.NewServiceBuilder()
-		service.SetName(name)
-		service.SetNamespace(namespace)
-		service.Selector = map[string]string{"service": name}
 		ports := builders.Ports{
 			Protocol:   "TCP",
 			Port:       80,
 			TargetPort: intstr.FromInt(8080),
 		}
-		service.AddPorts(ports.Build())
-		buildedService, _ := service.Build()
+		buildedService, _ := service.SetName(name).
+			SetNamespace(namespace).
+			SetSelector(map[string]string{"service": name}).
+			AddPorts(ports.Build()).
+			Build()
+
 		objects = append(objects, buildedService)
 	}
 	client := fake.NewSimpleClientset(objects...)
@@ -59,21 +60,38 @@ func TestUpdateService(t *testing.T) {
 func TestCreateService(t *testing.T) {
 	actions := initServices()
 	service := builders.NewServiceBuilder()
-	service.SetName("service5")
-	service.SetNamespace("default")
-	service.Selector = map[string]string{"service": "service5"}
 	ports := builders.Ports{
 		Protocol:   "TCP",
 		Port:       80,
 		TargetPort: intstr.FromInt(8080),
 	}
-	service.AddPorts(ports.Build())
-	buildedService, _ := service.Build()
+	buildedService, _ := service.SetName("service5").
+		SetNamespace("default").
+		SetSelector(map[string]string{"service": "service5"}).
+		AddPorts(ports.Build()).
+		Build()
 	actions.CreateService(buildedService)
 	newService, _ := actions.GetService("service5")
 	services, _ := actions.ListService()
 	assert.Equal(t, "service5", newService.Name)
 	assert.Equal(t, 5, len(services.Items))
+}
+
+func TestCreateServiceFailed(t *testing.T) {
+	actions := initServices()
+	service := builders.NewServiceBuilder()
+	ports := builders.Ports{
+		Protocol:   "TCP",
+		Port:       80,
+		TargetPort: intstr.FromInt(8080),
+	}
+	buildedService, _ := service.SetName("service5").
+		SetNamespace("beta").
+		SetSelector(map[string]string{"service": "service5"}).
+		AddPorts(ports.Build()).
+		Build()
+	err := actions.CreateService(buildedService)
+	assert.NotNil(t, err)
 }
 
 func TestDeleteService(t *testing.T) {

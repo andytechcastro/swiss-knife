@@ -6,10 +6,11 @@ import (
 
 // Container Struct for containers
 type Container struct {
-	Name  string
-	Image string
-	Tag   string
-	Port  int32
+	Name      string
+	Image     string
+	Tag       string
+	Port      int32
+	Container *apiv1.Container
 }
 
 // NewContainerBuilder return a container struct
@@ -18,28 +19,32 @@ func NewContainerBuilder() Container {
 }
 
 // SetName Set container name
-func (c *Container) SetName(name string) {
+func (c *Container) SetName(name string) *Container {
 	c.Name = name
+	return c
 }
 
 // SetImage Set container image
-func (c *Container) SetImage(image string) {
+func (c *Container) SetImage(image string) *Container {
 	c.Image = image
+	return c
 }
 
 // SetTag Set container tag
-func (c *Container) SetTag(tag string) {
+func (c *Container) SetTag(tag string) *Container {
 	c.Tag = tag
+	return c
 }
 
 // SetPort Set container port
-func (c *Container) SetPort(port int32) {
+func (c *Container) SetPort(port int32) *Container {
 	c.Port = port
+	return c
 }
 
 // Build build container
-func (c *Container) Build() apiv1.Container {
-	container := apiv1.Container{
+func (c *Container) Build() *apiv1.Container {
+	container := &apiv1.Container{
 		Name:  c.Name,
 		Image: c.Image + ":" + c.Tag,
 		Ports: []apiv1.ContainerPort{
@@ -50,5 +55,6 @@ func (c *Container) Build() apiv1.Container {
 			},
 		},
 	}
-	return container
+	c.Container = container
+	return c.Container
 }

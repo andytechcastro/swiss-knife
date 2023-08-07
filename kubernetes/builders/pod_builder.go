@@ -24,28 +24,33 @@ func NewPodBuilder() *Pod {
 }
 
 // SetName Set name for deployment
-func (p *Pod) SetName(name string) {
+func (p *Pod) SetName(name string) *Pod {
 	p.Name = name
+	return p
 }
 
 // SetNamespace Set namespace for deployment
-func (p *Pod) SetNamespace(namespace string) {
+func (p *Pod) SetNamespace(namespace string) *Pod {
 	p.Namespace = namespace
+	return p
 }
 
 // AddContainer Add new container to deployment
-func (p *Pod) AddContainer(container apiv1.Container) {
+func (p *Pod) AddContainer(container apiv1.Container) *Pod {
 	p.Containers = append(p.Containers, container)
+	return p
 }
 
 // SetLabels Set labels for deployment
-func (p *Pod) SetLabels(labels map[string]string) {
+func (p *Pod) SetLabels(labels map[string]string) *Pod {
 	p.Labels = labels
+	return p
 }
 
 // SetAnnotations Set Annotations for deployment
-func (p *Pod) SetAnnotations(annotations map[string]string) {
+func (p *Pod) SetAnnotations(annotations map[string]string) *Pod {
 	p.Annotations = annotations
+	return p
 }
 
 // Build Build de deployment interface
@@ -66,7 +71,7 @@ func (p *Pod) Build() *apiv1.Pod {
 		},
 	}
 	p.Pod = pod
-	return pod
+	return p.Pod
 }
 
 // ToYaml convert deployment struct to kubernetes yaml

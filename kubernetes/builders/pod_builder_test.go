@@ -11,16 +11,16 @@ import (
 
 func initPod() *builders.Pod {
 	container := kube.NewContainerBuilder()
-	container.SetName("testContainer")
-	container.SetImage("nginx")
-	container.SetTag("1")
-	container.SetPort(80)
+	container.SetName("testContainer").
+		SetImage("nginx").
+		SetTag("1").
+		SetPort(80)
 	pod := kube.NewPodBuilder()
-	pod.AddContainer(container.Build())
-	pod.SetName("test")
-	pod.SetNamespace("testNamespace")
-	pod.SetLabels(map[string]string{"test": "testing"})
-	pod.SetAnnotations(map[string]string{"annotation": "testAnnotation"})
+	pod.AddContainer(*container.Build()).
+		SetName("test").
+		SetNamespace("testNamespace").
+		SetLabels(map[string]string{"test": "testing"}).
+		SetAnnotations(map[string]string{"annotation": "testAnnotation"})
 	return pod
 }
 

@@ -30,45 +30,59 @@ func NewServiceBuilder() *Service {
 }
 
 // SetName Set the name of the service
-func (s *Service) SetName(name string) {
+func (s *Service) SetName(name string) *Service {
 	s.Name = name
+	return s
 }
 
 // SetNamespace Set the namespace of the service
-func (s *Service) SetNamespace(namespace string) {
+func (s *Service) SetNamespace(namespace string) *Service {
 	s.Namespace = namespace
+	return s
 }
 
 // SetType Set the type of a service
 // The options could be "ClusterIP", "NodePort", "LoadBalancer" or "ExternalName"
 // or use this contants https://pkg.go.dev/k8s.io/api/core/v1#ServiceType
-func (s *Service) SetType(t apiv1.ServiceType) {
+func (s *Service) SetType(t apiv1.ServiceType) *Service {
 	s.Type = t
+	return s
+}
+
+// SetExternalName set the external name (optional)
+func (s *Service) SetExternalName(externalName string) *Service {
+	s.ExternalName = externalName
+	return s
 }
 
 // SetSelector Set the selector of a service
-func (s *Service) SetSelector(selector map[string]string) {
+func (s *Service) SetSelector(selector map[string]string) *Service {
 	s.Selector = selector
+	return s
 }
 
 // SetClusterIP Set the clusterIP of a service
-func (s *Service) SetClusterIP(clusterIP string) {
+func (s *Service) SetClusterIP(clusterIP string) *Service {
 	s.ClusterIP = clusterIP
+	return s
 }
 
 // SetLabels Set labels for the service
-func (s *Service) SetLabels(labels map[string]string) {
+func (s *Service) SetLabels(labels map[string]string) *Service {
 	s.Labels = labels
+	return s
 }
 
 // AddPorts add ports to the service
-func (s *Service) AddPorts(ports *apiv1.ServicePort) {
+func (s *Service) AddPorts(ports *apiv1.ServicePort) *Service {
 	s.Ports = append(s.Ports, *ports)
+	return s
 }
 
 // SetAnnotations Set annotations for the service
-func (s *Service) SetAnnotations(annotations map[string]string) {
+func (s *Service) SetAnnotations(annotations map[string]string) *Service {
 	s.Annotations = annotations
+	return s
 }
 
 // Build Build a service with the data
@@ -96,7 +110,7 @@ func (s *Service) Build() (*apiv1.Service, error) {
 		},
 	}
 	s.Service = service
-	return service, nil
+	return s.Service, nil
 }
 
 // ToYaml Trasnform the struct in yaml

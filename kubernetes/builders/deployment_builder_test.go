@@ -4,25 +4,24 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
-	kube "github.com/andytechcastro/swiss-knife/kubernetes/builders"
 	"github.com/stretchr/testify/assert"
 	"sigs.k8s.io/yaml"
 )
 
 func initDeployment() *builders.Deployment {
-	container := kube.NewContainerBuilder()
-	container.SetName("testContainer")
-	container.SetImage("nginx")
-	container.SetTag("1")
-	container.SetPort(80)
-	deployment := kube.NewDeploymentBuilder()
-	deployment.AddContainer(container.Build())
-	deployment.SetName("test")
-	deployment.SetNamespace("testNamespace")
-	deployment.SetReplicas(3)
-	deployment.SetLabels(map[string]string{"test": "testing"})
-	deployment.SetAnnotations(map[string]string{"annotation": "testAnnotation"})
-	deployment.SetMatchLabels(map[string]string{"test": "testingmatch"})
+	container := builders.NewContainerBuilder()
+	container.SetName("testContainer").
+		SetImage("nginx").
+		SetTag("1").
+		SetPort(80)
+	deployment := builders.NewDeploymentBuilder()
+	deployment.AddContainer(*container.Build()).
+		SetName("test").
+		SetNamespace("testNamespace").
+		SetReplicas(3).
+		SetLabels(map[string]string{"test": "testing"}).
+		SetAnnotations(map[string]string{"annotation": "testAnnotation"}).
+		SetMatchLabels(map[string]string{"test": "testingmatch"})
 	return deployment
 }
 
