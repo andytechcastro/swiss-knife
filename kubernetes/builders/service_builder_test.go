@@ -11,15 +11,17 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
+const ServiceName = "my-service"
+
 func initService() *builders.Service {
 	service := kube.NewServiceBuilder()
-	service.SetName("my-service")
+	service.SetName(ServiceName)
 	return service
 }
 
 func TestBuildServiceClusterIP(t *testing.T) {
 	service := initService()
-	service.Selector = map[string]string{"service": "my-service"}
+	service.Selector = map[string]string{"service": ServiceName}
 	ports := builders.Ports{
 		Protocol:   "TCP",
 		Port:       80,
@@ -27,7 +29,7 @@ func TestBuildServiceClusterIP(t *testing.T) {
 	}
 	service.AddPorts(ports.Build())
 	buildedService, _ := service.Build()
-	assert.Equal(t, "my-service", buildedService.Name)
+	assert.Equal(t, ServiceName, buildedService.Name)
 	assert.Equal(t, apiv1.ServiceTypeClusterIP, buildedService.Spec.Type)
 	assert.Equal(t, apiv1.ProtocolTCP, buildedService.Spec.Ports[0].Protocol)
 	assert.Equal(t, int32(80), buildedService.Spec.Ports[0].Port)
@@ -36,12 +38,12 @@ func TestBuildServiceClusterIP(t *testing.T) {
 
 func TestBuildServiceExternalName(t *testing.T) {
 	service := initService()
-	buildedService, _ := service.SetExternalName("my-service").
+	buildedService, _ := service.SetExternalName(ServiceName).
 		SetType("ExternalName").
 		Build()
-	assert.Equal(t, "my-service", buildedService.Name)
+	assert.Equal(t, ServiceName, buildedService.Name)
 	assert.Equal(t, apiv1.ServiceTypeExternalName, buildedService.Spec.Type)
-	assert.Equal(t, "my-service", buildedService.Spec.ExternalName)
+	assert.Equal(t, ServiceName, buildedService.Spec.ExternalName)
 }
 
 func TestBuildServiceExternalNameEmpty(t *testing.T) {
@@ -64,7 +66,7 @@ func TestServiceToYaml(t *testing.T) {
 		Port:       80,
 		TargetPort: intstr.FromInt(8080),
 	}
-	service.SetSelector(map[string]string{"service": "my-service"}).
+	service.SetSelector(map[string]string{"service": ServiceName}).
 		AddPorts(ports.Build()).
 		Build()
 	yamlService := service.ToYaml()
@@ -74,7 +76,7 @@ func TestServiceToYaml(t *testing.T) {
 			"kind":       "Service",
 			"metadata": map[string]interface{}{
 				"creationTimestamp": interface{}(nil),
-				"name":              "my-service",
+				"name":              ServiceName,
 			},
 			"spec": map[string]interface{}{
 				"ports": []interface{}{map[string]interface{}{
@@ -84,7 +86,7 @@ func TestServiceToYaml(t *testing.T) {
 				}},
 				"type": "ClusterIP",
 				"selector": map[string]interface{}{
-					"service": "my-service",
+					"service": ServiceName,
 				},
 			},
 			"status": map[string]interface{}{
