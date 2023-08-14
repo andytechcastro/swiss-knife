@@ -8,7 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/intstr"
+	dynamicFake "k8s.io/client-go/dynamic/fake"
 	"k8s.io/client-go/kubernetes/fake"
+	"k8s.io/client-go/rest"
 )
 
 func initServices() *actions.Actions {
@@ -35,24 +37,26 @@ func initServices() *actions.Actions {
 		objects = append(objects, buildedService)
 	}
 	client := fake.NewSimpleClientset(objects...)
+	objectsDynamic := []runtime.Object{}
 
-	actions := actions.NewActions(client)
+	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
+	actions := actions.NewTestActions(client, dynamicClient, &rest.Config{})
 	return actions
 }
 
 func TestGetService(t *testing.T) {
 	actions := initServices()
-	service, _ := actions.GetService("service1")
+	service, _ := actions.Service.Get("service1")
 	assert.Equal(t, "service1", service.Name)
 }
 
 func TestUpdateService(t *testing.T) {
 	actions := initServices()
-	service, _ := actions.GetService("service1")
+	service, _ := actions.Service.Get("service1")
 	service.Spec.Ports[0].TargetPort = intstr.FromInt(8081)
 	service.Spec.Ports[0].Port = 81
-	actions.UpdateService(service)
-	serviceUpdated, _ := actions.GetService("service1")
+	actions.Service.Update(service)
+	serviceUpdated, _ := actions.Service.Get("service1")
 	assert.Equal(t, intstr.FromInt(8081), serviceUpdated.Spec.Ports[0].TargetPort)
 	assert.Equal(t, int32(81), serviceUpdated.Spec.Ports[0].Port)
 }
@@ -70,9 +74,9 @@ func TestCreateService(t *testing.T) {
 		SetSelector(map[string]string{"service": "service5"}).
 		AddPorts(ports.Build()).
 		Build()
-	actions.CreateService(buildedService)
-	newService, _ := actions.GetService("service5")
-	services, _ := actions.ListService()
+	actions.Service.Create(buildedService)
+	newService, _ := actions.Service.Get("service5")
+	services, _ := actions.Service.List()
 	assert.Equal(t, "service5", newService.Name)
 	assert.Equal(t, 5, len(services.Items))
 }
@@ -90,14 +94,14 @@ func TestCreateServiceFailed(t *testing.T) {
 		SetSelector(map[string]string{"service": "service5"}).
 		AddPorts(ports.Build()).
 		Build()
-	err := actions.CreateService(buildedService)
+	err := actions.Service.Create(buildedService)
 	assert.NotNil(t, err)
 }
 
 func TestDeleteService(t *testing.T) {
 	actions := initServices()
-	actions.DeleteService("service3")
-	services, _ := actions.ListService()
+	actions.Service.Delete("service3")
+	services, _ := actions.Service.List()
 	assert.Equal(t, 3, len(services.Items))
 	for _, service := range services.Items {
 		assert.NotEqual(t, "service3", service.Name)
@@ -106,6 +110,6 @@ func TestDeleteService(t *testing.T) {
 
 func TestListService(t *testing.T) {
 	actions := initServices()
-	services, _ := actions.ListService()
+	services, _ := actions.Service.List()
 	assert.Equal(t, 4, len(services.Items))
 }

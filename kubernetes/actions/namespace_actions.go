@@ -5,14 +5,27 @@ import (
 
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
-// CreateNamespace Create a namespace in the client
-func (a *Actions) CreateNamespace(namespace *apiv1.Namespace) error {
+// Namespace struct for namespace action
+type Namespace struct {
+	client corev1.NamespaceInterface
+}
+
+// NewNamespaceAction return a namespace action
+func NewNamespaceAction(client corev1.NamespaceInterface) *Namespace {
+	return &Namespace{
+		client: client,
+	}
+}
+
+// Create Create a namespace in the client
+func (n *Namespace) Create(namespace *apiv1.Namespace) error {
 	if namespace == nil {
 		return errorNamespaceEmpty
 	}
-	_, err := a.client.CoreV1().Namespaces().Create(
+	_, err := n.client.Create(
 		context.TODO(),
 		namespace,
 		metav1.CreateOptions{},
@@ -23,12 +36,12 @@ func (a *Actions) CreateNamespace(namespace *apiv1.Namespace) error {
 	return nil
 }
 
-// UpdateNamespace Create a namespace in the client
-func (a *Actions) UpdateNamespace(namespace *apiv1.Namespace) error {
+// Update Update a namespace in the client
+func (n *Namespace) Update(namespace *apiv1.Namespace) error {
 	if namespace == nil {
 		return errorNamespaceEmpty
 	}
-	_, err := a.client.CoreV1().Namespaces().Update(
+	_, err := n.client.Update(
 		context.TODO(),
 		namespace,
 		metav1.UpdateOptions{},
@@ -39,12 +52,12 @@ func (a *Actions) UpdateNamespace(namespace *apiv1.Namespace) error {
 	return nil
 }
 
-// DeleteNamespace Delete the namespace in the client
-func (a *Actions) DeleteNamespace(namespaceName string) error {
+// Delete Delete the namespace in the client
+func (n *Namespace) Delete(namespaceName string) error {
 	if namespaceName == "" {
 		return errorNameEmpty
 	}
-	err := a.client.CoreV1().Namespaces().Delete(
+	err := n.client.Delete(
 		context.TODO(),
 		namespaceName,
 		metav1.DeleteOptions{},
@@ -56,12 +69,12 @@ func (a *Actions) DeleteNamespace(namespaceName string) error {
 	return nil
 }
 
-// GetNamespace Get a namespace in the client
-func (a *Actions) GetNamespace(namespaceName string) (*apiv1.Namespace, error) {
+// Get Get a namespace in the client
+func (n *Namespace) Get(namespaceName string) (*apiv1.Namespace, error) {
 	if namespaceName == "" {
 		return nil, errorNameEmpty
 	}
-	ns, err := a.client.CoreV1().Namespaces().Get(
+	ns, err := n.client.Get(
 		context.TODO(),
 		namespaceName,
 		metav1.GetOptions{},
@@ -72,9 +85,9 @@ func (a *Actions) GetNamespace(namespaceName string) (*apiv1.Namespace, error) {
 	return ns, nil
 }
 
-// ListNamespace List the namespaces of a client
-func (a *Actions) ListNamespace() (*apiv1.NamespaceList, error) {
-	namespaceList, err := a.client.CoreV1().Namespaces().List(
+// List List the namespaces of a client
+func (n *Namespace) List() (*apiv1.NamespaceList, error) {
+	namespaceList, err := n.client.List(
 		context.TODO(),
 		metav1.ListOptions{},
 	)

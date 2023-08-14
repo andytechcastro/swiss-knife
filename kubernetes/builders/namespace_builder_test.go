@@ -11,7 +11,9 @@ import (
 
 func initNamespace() *builders.Namespace {
 	namespace := kube.NewNamespaceBuilder()
-	namespace.SetName("default")
+	namespace.SetName("default").
+		SetAnnotations(map[string]string{"my-first": "annotation"}).
+		SetLabels(map[string]string{"my-first": "label"})
 	return namespace
 }
 
@@ -32,6 +34,12 @@ func TestNamespaceToYaml(t *testing.T) {
 			"metadata": map[string]interface{}{
 				"creationTimestamp": interface{}(nil),
 				"name":              "default",
+				"annotations": map[string]string{
+					"my-first": "annotation",
+				},
+				"labels": map[string]string{
+					"my-first": "label",
+				},
 			},
 			"spec":   map[string]interface{}{},
 			"status": map[string]interface{}{},

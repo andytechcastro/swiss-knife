@@ -5,14 +5,27 @@ import (
 
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
-// CreateService create a service in the client
-func (a *Actions) CreateService(service *apiv1.Service) error {
+// Service is the struct for access to the service actions
+type Service struct {
+	client corev1.ServiceInterface
+}
+
+// NewServiceAction return a service action
+func NewServiceAction(client corev1.ServiceInterface) *Service {
+	return &Service{
+		client: client,
+	}
+}
+
+// Create create a service in the client
+func (s *Service) Create(service *apiv1.Service) error {
 	if service == nil {
 		return errorServiceEmpty
 	}
-	_, err := a.client.CoreV1().Services(a.Namespace).Create(
+	_, err := s.client.Create(
 		context.TODO(),
 		service,
 		metav1.CreateOptions{},
@@ -23,12 +36,12 @@ func (a *Actions) CreateService(service *apiv1.Service) error {
 	return nil
 }
 
-// UpdateService a service in the client
-func (a *Actions) UpdateService(service *apiv1.Service) error {
+// Update a service in the client
+func (s *Service) Update(service *apiv1.Service) error {
 	if service == nil {
 		return errorServiceEmpty
 	}
-	_, err := a.client.CoreV1().Services(a.Namespace).Update(
+	_, err := s.client.Update(
 		context.TODO(),
 		service,
 		metav1.UpdateOptions{},
@@ -39,12 +52,12 @@ func (a *Actions) UpdateService(service *apiv1.Service) error {
 	return nil
 }
 
-// DeleteService Delete a service in the client
-func (a *Actions) DeleteService(serviceName string) error {
+// Delete Delete a service in the client
+func (s *Service) Delete(serviceName string) error {
 	if serviceName == "" {
 		return errorNameEmpty
 	}
-	err := a.client.CoreV1().Services(a.Namespace).Delete(
+	err := s.client.Delete(
 		context.TODO(),
 		serviceName,
 		metav1.DeleteOptions{},
@@ -55,12 +68,12 @@ func (a *Actions) DeleteService(serviceName string) error {
 	return nil
 }
 
-// GetService Get a service in the client
-func (a *Actions) GetService(serviceName string) (*apiv1.Service, error) {
+// Get Get a service in the client
+func (s *Service) Get(serviceName string) (*apiv1.Service, error) {
 	if serviceName == "" {
 		return nil, errorNameEmpty
 	}
-	service, err := a.client.CoreV1().Services(a.Namespace).Get(
+	service, err := s.client.Get(
 		context.TODO(),
 		serviceName,
 		metav1.GetOptions{},
@@ -72,9 +85,9 @@ func (a *Actions) GetService(serviceName string) (*apiv1.Service, error) {
 	return service, nil
 }
 
-// ListService all services in a namespace
-func (a *Actions) ListService() (*apiv1.ServiceList, error) {
-	serviceList, err := a.client.CoreV1().Services(a.Namespace).List(
+// List all services in a namespace
+func (s *Service) List() (*apiv1.ServiceList, error) {
+	serviceList, err := s.client.List(
 		context.TODO(),
 		metav1.ListOptions{},
 	)

@@ -5,14 +5,27 @@ import (
 
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	coreInterface "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
-// CreatePod Create a pods in the client
-func (a *Actions) CreatePod(pod *apiv1.Pod) error {
+// Pod struct for actions pod
+type Pod struct {
+	client coreInterface.PodInterface
+}
+
+// NewPodAction return an actions pod
+func NewPodAction(client coreInterface.PodInterface) *Pod {
+	return &Pod{
+		client: client,
+	}
+}
+
+// Create Create a pods in the client
+func (p *Pod) Create(pod *apiv1.Pod) error {
 	if pod == nil {
 		return errorPodEmpty
 	}
-	_, err := a.client.CoreV1().Pods(a.Namespace).Create(
+	_, err := p.client.Create(
 		context.TODO(),
 		pod,
 		metav1.CreateOptions{},
@@ -24,12 +37,12 @@ func (a *Actions) CreatePod(pod *apiv1.Pod) error {
 	return nil
 }
 
-// UpdatePod Update a pods in the client
-func (a *Actions) UpdatePod(pod *apiv1.Pod) error {
+// Update Update a pods in the client
+func (p *Pod) Update(pod *apiv1.Pod) error {
 	if pod == nil {
 		return errorPodEmpty
 	}
-	_, err := a.client.CoreV1().Pods(a.Namespace).Update(
+	_, err := p.client.Update(
 		context.TODO(),
 		pod,
 		metav1.UpdateOptions{},
@@ -40,13 +53,13 @@ func (a *Actions) UpdatePod(pod *apiv1.Pod) error {
 	return nil
 }
 
-// DeletePod Delete a pod in the client
-func (a *Actions) DeletePod(podName string) error {
+// Delete Delete a pod in the client
+func (p *Pod) Delete(podName string) error {
 	if podName == "" {
 		return errorNameEmpty
 	}
 	deletePolicy := metav1.DeletePropagationForeground
-	err := a.client.CoreV1().Pods(a.Namespace).Delete(
+	err := p.client.Delete(
 		context.TODO(),
 		podName,
 		metav1.DeleteOptions{
@@ -59,12 +72,12 @@ func (a *Actions) DeletePod(podName string) error {
 	return nil
 }
 
-// GetPod Get a pod from the client
-func (a *Actions) GetPod(podName string) (*apiv1.Pod, error) {
+// Get Get a pod from the client
+func (p *Pod) Get(podName string) (*apiv1.Pod, error) {
 	if podName == "" {
 		return nil, errorNameEmpty
 	}
-	pod, err := a.client.CoreV1().Pods(a.Namespace).Get(
+	pod, err := p.client.Get(
 		context.TODO(),
 		podName,
 		metav1.GetOptions{},
@@ -76,13 +89,9 @@ func (a *Actions) GetPod(podName string) (*apiv1.Pod, error) {
 	return pod, nil
 }
 
-// ListPod List all pods in a namespace
-func (a *Actions) ListPod() (*apiv1.PodList, error) {
-	namespace := a.Namespace
-	if a.AllNamespaces {
-		namespace = ""
-	}
-	podList, err := a.client.CoreV1().Pods(namespace).List(
+// List List all pods in a namespace
+func (p *Pod) List() (*apiv1.PodList, error) {
+	podList, err := p.client.List(
 		context.TODO(),
 		metav1.ListOptions{},
 	)

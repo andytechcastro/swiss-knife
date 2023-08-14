@@ -8,7 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	dynamicFake "k8s.io/client-go/dynamic/fake"
 	"k8s.io/client-go/kubernetes/fake"
+
+	"k8s.io/client-go/rest"
 )
 
 func initNamespaces() *actions.Actions {
@@ -33,13 +37,15 @@ func initNamespaces() *actions.Actions {
 			Annotations: map[string]string{},
 		},
 	})
-	actions := actions.NewActions(client)
+	objects := []runtime.Object{}
+	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objects...)
+	actions := actions.NewTestActions(client, dynamicClient, &rest.Config{})
 	return actions
 }
 
 func TestGetNamespace(t *testing.T) {
 	actions := initNamespaces()
-	namespace, _ := actions.GetNamespace("tools")
+	namespace, _ := actions.Namespace.Get("tools")
 	assert.Equal(t, "tools", namespace.Name)
 }
 
@@ -47,25 +53,25 @@ func TestCreateNamespace(t *testing.T) {
 	actions := initNamespaces()
 	builder := builders.NewNamespaceBuilder()
 	builder.SetName("andres")
-	actions.CreateNamespace(builder.Build())
-	namespacesList, _ := actions.ListNamespace()
+	actions.Namespace.Create(builder.Build())
+	namespacesList, _ := actions.Namespace.List()
 	assert.Equal(t, 5, len(namespacesList.Items))
 	assert.Equal(t, "andres", namespacesList.Items[0].Name)
 }
 
 func TestUpdateNamespace(t *testing.T) {
 	actions := initNamespaces()
-	namespace, _ := actions.GetNamespace("tools")
+	namespace, _ := actions.Namespace.Get("tools")
 	namespace.Labels = map[string]string{"use": "tools"}
-	actions.UpdateNamespace(namespace)
-	namespaceUpdated, _ := actions.GetNamespace("tools")
+	actions.Namespace.Update(namespace)
+	namespaceUpdated, _ := actions.Namespace.Get("tools")
 	assert.Equal(t, map[string]string{"use": "tools"}, namespaceUpdated.Labels)
 }
 
 func TestDeleteNamespace(t *testing.T) {
 	actions := initNamespaces()
-	actions.DeleteNamespace("beta")
-	namespacesList, _ := actions.ListNamespace()
+	actions.Namespace.Delete("beta")
+	namespacesList, _ := actions.Namespace.List()
 	assert.Equal(t, 3, len(namespacesList.Items))
 	for _, namespace := range namespacesList.Items {
 		assert.NotEqual(t, "beta", namespace.Name)
@@ -74,6 +80,6 @@ func TestDeleteNamespace(t *testing.T) {
 
 func TestListNamespaces(t *testing.T) {
 	actions := initNamespaces()
-	namespacesList, _ := actions.ListNamespace()
+	namespacesList, _ := actions.Namespace.List()
 	assert.Equal(t, 4, len(namespacesList.Items))
 }
