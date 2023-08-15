@@ -17,6 +17,7 @@ type Actions struct {
 	Service          *Service
 	Pod              *Pod
 	Deployment       *Deployment
+	Custom           *Custom
 }
 
 // NewActions get an actions interface
@@ -36,16 +37,19 @@ func NewTestActions(clientSet kubernetes.Interface, dynamicClient dynamic.Interf
 	//	Resource: "serviceaccounts",
 	//}
 	//serviceAccount := dynamicClient.Resource(serviceAccountRes).Namespace("default")
+	coreV1Client := clientSet.CoreV1()
+	appsV1Client := clientSet.AppsV1()
 	return &Actions{
 		client:           clientSet,
 		config:           config,
 		CurrentNamespace: "default",
 		AllNamespaces:    false,
-		Namespace:        NewNamespaceAction(clientSet.CoreV1().Namespaces()),
-		Service:          NewServiceAction(clientSet.CoreV1().Services("default")),
-		Deployment:       NewDeploymentAction(clientSet.AppsV1().Deployments("default")),
-		Pod:              NewPodAction(clientSet.CoreV1().Pods("default")),
-		ServiceAccount:   NewServiceAccountAction(clientSet.CoreV1().ServiceAccounts("default")),
+		Namespace:        NewNamespaceAction(coreV1Client.Namespaces()),
+		Service:          NewServiceAction(coreV1Client),
+		Deployment:       NewDeploymentAction(appsV1Client),
+		Pod:              NewPodAction(coreV1Client),
+		ServiceAccount:   NewServiceAccountAction(coreV1Client),
+		Custom:           NewCustomActions(dynamicClient),
 	}
 }
 

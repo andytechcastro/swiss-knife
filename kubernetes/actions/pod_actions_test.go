@@ -12,7 +12,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func initPod() *actions.Actions {
+func initPod() *actions.Pod {
 	info := map[string]string{
 		"service1": "nginx",
 		"service2": "apache",
@@ -38,13 +38,14 @@ func initPod() *actions.Actions {
 	objectsDynamic := []runtime.Object{}
 	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
 	client := fake.NewSimpleClientset(objects...)
-	actions := actions.NewTestActions(client, dynamicClient, &rest.Config{})
+	actions := actions.NewTestActions(client, dynamicClient, &rest.Config{}).Pod
+	actions.Namespace("default")
 	return actions
 }
 
 func TestGetPod(t *testing.T) {
 	actions := initPod()
-	pod, _ := actions.Pod.Get("service3")
+	pod, _ := actions.Get("service3")
 	assert.Equal(t, "service3", pod.Name)
 	assert.Equal(t, "go:1", pod.Spec.Containers[0].Image)
 }
@@ -63,9 +64,9 @@ func TestCreatePod(t *testing.T) {
 		SetAnnotations(map[string]string{"annotation": "testAnnotation"}).
 		AddContainer(*container.Build()).
 		Build()
-	actions.Pod.Create(buildedPod)
-	newPod, _ := actions.Pod.Get("service5")
-	pods, _ := actions.Pod.List()
+	actions.Create(buildedPod)
+	newPod, _ := actions.Get("service5")
+	pods, _ := actions.List()
 	assert.Equal(t, "service5", newPod.Name)
 	assert.Equal(t, "java:3", newPod.Spec.Containers[0].Image)
 	assert.Equal(t, 5, len(pods.Items))
@@ -73,17 +74,17 @@ func TestCreatePod(t *testing.T) {
 
 func TestUpdatePod(t *testing.T) {
 	actions := initPod()
-	pod, _ := actions.Pod.Get("service3")
+	pod, _ := actions.Get("service3")
 	pod.Spec.Containers[0].Image = "go:1.21"
-	actions.Pod.Update(pod)
-	updatedPod, _ := actions.Pod.Get("service3")
+	actions.Update(pod)
+	updatedPod, _ := actions.Get("service3")
 	assert.Equal(t, "go:1.21", updatedPod.Spec.Containers[0].Image)
 }
 
 func TestDeletePod(t *testing.T) {
 	actions := initPod()
-	actions.Pod.Delete("service4")
-	pods, _ := actions.Pod.List()
+	actions.Delete("service4")
+	pods, _ := actions.List()
 	assert.Equal(t, 3, len(pods.Items))
 	for _, pod := range pods.Items {
 		assert.NotEqual(t, "service4", pod.Name)
@@ -92,6 +93,6 @@ func TestDeletePod(t *testing.T) {
 
 func TestListPod(t *testing.T) {
 	actions := initPod()
-	pods, _ := actions.Pod.List()
+	pods, _ := actions.List()
 	assert.Equal(t, 4, len(pods.Items))
 }

@@ -10,14 +10,22 @@ import (
 
 // Service is the struct for access to the service actions
 type Service struct {
-	client corev1.ServiceInterface
+	client           corev1.CoreV1Interface
+	CurrentNamespace string
 }
 
 // NewServiceAction return a service action
-func NewServiceAction(client corev1.ServiceInterface) *Service {
+func NewServiceAction(client corev1.CoreV1Interface) *Service {
 	return &Service{
-		client: client,
+		client:           client,
+		CurrentNamespace: "",
 	}
+}
+
+// Namespace set namespace
+func (s *Service) Namespace(namespace string) *Service {
+	s.CurrentNamespace = namespace
+	return s
 }
 
 // Create create a service in the client
@@ -25,7 +33,7 @@ func (s *Service) Create(service *apiv1.Service) error {
 	if service == nil {
 		return errorServiceEmpty
 	}
-	_, err := s.client.Create(
+	_, err := s.client.Services(s.CurrentNamespace).Create(
 		context.TODO(),
 		service,
 		metav1.CreateOptions{},
@@ -41,7 +49,7 @@ func (s *Service) Update(service *apiv1.Service) error {
 	if service == nil {
 		return errorServiceEmpty
 	}
-	_, err := s.client.Update(
+	_, err := s.client.Services(s.CurrentNamespace).Update(
 		context.TODO(),
 		service,
 		metav1.UpdateOptions{},
@@ -57,7 +65,7 @@ func (s *Service) Delete(serviceName string) error {
 	if serviceName == "" {
 		return errorNameEmpty
 	}
-	err := s.client.Delete(
+	err := s.client.Services(s.CurrentNamespace).Delete(
 		context.TODO(),
 		serviceName,
 		metav1.DeleteOptions{},
@@ -73,7 +81,7 @@ func (s *Service) Get(serviceName string) (*apiv1.Service, error) {
 	if serviceName == "" {
 		return nil, errorNameEmpty
 	}
-	service, err := s.client.Get(
+	service, err := s.client.Services(s.CurrentNamespace).Get(
 		context.TODO(),
 		serviceName,
 		metav1.GetOptions{},
@@ -87,7 +95,7 @@ func (s *Service) Get(serviceName string) (*apiv1.Service, error) {
 
 // List all services in a namespace
 func (s *Service) List() (*apiv1.ServiceList, error) {
-	serviceList, err := s.client.List(
+	serviceList, err := s.client.Services(s.CurrentNamespace).List(
 		context.TODO(),
 		metav1.ListOptions{},
 	)

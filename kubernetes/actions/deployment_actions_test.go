@@ -12,7 +12,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func initDeployment() *actions.Actions {
+func initDeployment() *actions.Deployment {
 	info := map[string]string{
 		"service1": "nginx",
 		"service2": "apache",
@@ -40,13 +40,14 @@ func initDeployment() *actions.Actions {
 	client := fake.NewSimpleClientset(objects...)
 	objectsDynamic := []runtime.Object{}
 	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
-	actions := actions.NewTestActions(client, dynamicClient, &rest.Config{})
+	actions := actions.NewTestActions(client, dynamicClient, &rest.Config{}).Deployment
+	actions.Namespace("default")
 	return actions
 }
 
 func TestGetDeployment(t *testing.T) {
 	actions := initDeployment()
-	deployment, _ := actions.Deployment.Get("service3")
+	deployment, _ := actions.Get("service3")
 	assert.Equal(t, "service3", deployment.Name)
 	assert.Equal(t, "go:1", deployment.Spec.Template.Spec.Containers[0].Image)
 }
@@ -65,9 +66,9 @@ func TestCreateDeployment(t *testing.T) {
 		SetAnnotations(map[string]string{"annotation": "testAnnotation"}).
 		AddContainer(*container.Build()).
 		Build()
-	actions.Deployment.Create(buildedDeployment)
-	newDeployment, _ := actions.Deployment.Get("service5")
-	deployments, _ := actions.Deployment.List()
+	actions.Create(buildedDeployment)
+	newDeployment, _ := actions.Get("service5")
+	deployments, _ := actions.List()
 	assert.Equal(t, "service5", newDeployment.Name)
 	assert.Equal(t, "java:3", newDeployment.Spec.Template.Spec.Containers[0].Image)
 	assert.Equal(t, 5, len(deployments.Items))
@@ -75,17 +76,17 @@ func TestCreateDeployment(t *testing.T) {
 
 func TestUpdateDeployment(t *testing.T) {
 	actions := initDeployment()
-	deployment, _ := actions.Deployment.Get("service3")
+	deployment, _ := actions.Get("service3")
 	deployment.Spec.Template.Spec.Containers[0].Image = "go:1.21"
-	actions.Deployment.Update(deployment)
-	updatedDeployment, _ := actions.Deployment.Get("service3")
+	actions.Update(deployment)
+	updatedDeployment, _ := actions.Get("service3")
 	assert.Equal(t, "go:1.21", updatedDeployment.Spec.Template.Spec.Containers[0].Image)
 }
 
 func TestDeleteDeployment(t *testing.T) {
 	actions := initDeployment()
-	actions.Deployment.Delete("service4")
-	deployments, _ := actions.Deployment.List()
+	actions.Delete("service4")
+	deployments, _ := actions.List()
 	assert.Equal(t, 3, len(deployments.Items))
 	for _, deployment := range deployments.Items {
 		assert.NotEqual(t, "service4", deployment.Name)
@@ -94,6 +95,6 @@ func TestDeleteDeployment(t *testing.T) {
 
 func TestListDeployment(t *testing.T) {
 	actions := initDeployment()
-	deployments, _ := actions.Deployment.List()
+	deployments, _ := actions.List()
 	assert.Equal(t, 4, len(deployments.Items))
 }

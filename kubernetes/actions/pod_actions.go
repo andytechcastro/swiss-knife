@@ -10,14 +10,22 @@ import (
 
 // Pod struct for actions pod
 type Pod struct {
-	client coreInterface.PodInterface
+	client           coreInterface.CoreV1Interface
+	CurrentNamespace string
 }
 
 // NewPodAction return an actions pod
-func NewPodAction(client coreInterface.PodInterface) *Pod {
+func NewPodAction(client coreInterface.CoreV1Interface) *Pod {
 	return &Pod{
-		client: client,
+		client:           client,
+		CurrentNamespace: "",
 	}
+}
+
+// Namespace set namespace
+func (p *Pod) Namespace(namespace string) *Pod {
+	p.CurrentNamespace = namespace
+	return p
 }
 
 // Create Create a pods in the client
@@ -25,7 +33,7 @@ func (p *Pod) Create(pod *apiv1.Pod) error {
 	if pod == nil {
 		return errorPodEmpty
 	}
-	_, err := p.client.Create(
+	_, err := p.client.Pods(p.CurrentNamespace).Create(
 		context.TODO(),
 		pod,
 		metav1.CreateOptions{},
@@ -42,7 +50,7 @@ func (p *Pod) Update(pod *apiv1.Pod) error {
 	if pod == nil {
 		return errorPodEmpty
 	}
-	_, err := p.client.Update(
+	_, err := p.client.Pods(p.CurrentNamespace).Update(
 		context.TODO(),
 		pod,
 		metav1.UpdateOptions{},
@@ -59,7 +67,7 @@ func (p *Pod) Delete(podName string) error {
 		return errorNameEmpty
 	}
 	deletePolicy := metav1.DeletePropagationForeground
-	err := p.client.Delete(
+	err := p.client.Pods(p.CurrentNamespace).Delete(
 		context.TODO(),
 		podName,
 		metav1.DeleteOptions{
@@ -77,7 +85,7 @@ func (p *Pod) Get(podName string) (*apiv1.Pod, error) {
 	if podName == "" {
 		return nil, errorNameEmpty
 	}
-	pod, err := p.client.Get(
+	pod, err := p.client.Pods(p.CurrentNamespace).Get(
 		context.TODO(),
 		podName,
 		metav1.GetOptions{},
@@ -91,7 +99,7 @@ func (p *Pod) Get(podName string) (*apiv1.Pod, error) {
 
 // List List all pods in a namespace
 func (p *Pod) List() (*apiv1.PodList, error) {
-	podList, err := p.client.List(
+	podList, err := p.client.Pods(p.CurrentNamespace).List(
 		context.TODO(),
 		metav1.ListOptions{},
 	)

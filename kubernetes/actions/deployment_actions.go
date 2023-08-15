@@ -10,14 +10,22 @@ import (
 
 // Deployment strct for deployments action
 type Deployment struct {
-	client appsInterface.DeploymentInterface
+	client           appsInterface.AppsV1Interface
+	CurrentNamespace string
 }
 
 // NewDeploymentAction get a deployment action
-func NewDeploymentAction(client appsInterface.DeploymentInterface) *Deployment {
+func NewDeploymentAction(client appsInterface.AppsV1Interface) *Deployment {
 	return &Deployment{
-		client: client,
+		client:           client,
+		CurrentNamespace: "",
 	}
+}
+
+// Namespace set namespace
+func (d *Deployment) Namespace(namespace string) *Deployment {
+	d.CurrentNamespace = namespace
+	return d
 }
 
 // Create Create a deployment in the client
@@ -25,7 +33,7 @@ func (d *Deployment) Create(deployment *appsv1.Deployment) error {
 	if deployment == nil {
 		return errorDeploymentEmpty
 	}
-	_, err := d.client.Create(
+	_, err := d.client.Deployments(d.CurrentNamespace).Create(
 		context.TODO(),
 		deployment,
 		metav1.CreateOptions{},
@@ -42,7 +50,7 @@ func (d *Deployment) Update(deployment *appsv1.Deployment) error {
 	if deployment == nil {
 		return errorDeploymentEmpty
 	}
-	_, err := d.client.Update(
+	_, err := d.client.Deployments(d.CurrentNamespace).Update(
 		context.TODO(),
 		deployment,
 		metav1.UpdateOptions{},
@@ -59,7 +67,7 @@ func (d *Deployment) Delete(deploymentName string) error {
 		return errorNameEmpty
 	}
 	deletePolicy := metav1.DeletePropagationForeground
-	err := d.client.Delete(
+	err := d.client.Deployments(d.CurrentNamespace).Delete(
 		context.TODO(),
 		deploymentName,
 		metav1.DeleteOptions{
@@ -77,7 +85,7 @@ func (d *Deployment) Get(deploymentName string) (*appsv1.Deployment, error) {
 	if deploymentName == "" {
 		return nil, errorNameEmpty
 	}
-	deployment, err := d.client.Get(
+	deployment, err := d.client.Deployments(d.CurrentNamespace).Get(
 		context.TODO(),
 		deploymentName,
 		metav1.GetOptions{},
@@ -91,7 +99,7 @@ func (d *Deployment) Get(deploymentName string) (*appsv1.Deployment, error) {
 
 // List List all deployments in a namespace
 func (d *Deployment) List() (*appsv1.DeploymentList, error) {
-	deploymentList, err := d.client.List(
+	deploymentList, err := d.client.Deployments(d.CurrentNamespace).List(
 		context.TODO(),
 		metav1.ListOptions{},
 	)

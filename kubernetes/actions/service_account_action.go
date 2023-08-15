@@ -10,19 +10,27 @@ import (
 
 // ServiceAccount for manager namespace actions
 type ServiceAccount struct {
-	client coreInterface.ServiceAccountInterface
+	client           coreInterface.CoreV1Interface
+	CurrentNamespace string
 }
 
 // NewServiceAccountAction get ServiceAccount action
-func NewServiceAccountAction(client coreInterface.ServiceAccountInterface) *ServiceAccount {
+func NewServiceAccountAction(client coreInterface.CoreV1Interface) *ServiceAccount {
 	return &ServiceAccount{
-		client: client,
+		client:           client,
+		CurrentNamespace: "",
 	}
+}
+
+// Namespace set namespace
+func (sa *ServiceAccount) Namespace(namespace string) *ServiceAccount {
+	sa.CurrentNamespace = namespace
+	return sa
 }
 
 // Get get namespace
 func (sa *ServiceAccount) Get(name string) (*apiv1.ServiceAccount, error) {
-	serviceAccount, err := sa.client.Get(
+	serviceAccount, err := sa.client.ServiceAccounts(sa.CurrentNamespace).Get(
 		context.TODO(),
 		name,
 		metav1.GetOptions{})
@@ -34,7 +42,7 @@ func (sa *ServiceAccount) Get(name string) (*apiv1.ServiceAccount, error) {
 
 // Create Create an ServiceAccount
 func (sa *ServiceAccount) Create(serviceAccount *apiv1.ServiceAccount) error {
-	_, err := sa.client.Create(
+	_, err := sa.client.ServiceAccounts(sa.CurrentNamespace).Create(
 		context.TODO(),
 		serviceAccount,
 		metav1.CreateOptions{},
@@ -50,7 +58,7 @@ func (sa *ServiceAccount) Update(serviceAccount *apiv1.ServiceAccount) error {
 	if serviceAccount == nil {
 		return errorPodEmpty
 	}
-	_, err := sa.client.Update(
+	_, err := sa.client.ServiceAccounts(sa.CurrentNamespace).Update(
 		context.TODO(),
 		serviceAccount,
 		metav1.UpdateOptions{},
@@ -67,7 +75,7 @@ func (sa *ServiceAccount) Delete(saName string) error {
 		return errorNameEmpty
 	}
 	deletePolicy := metav1.DeletePropagationForeground
-	err := sa.client.Delete(
+	err := sa.client.ServiceAccounts(sa.CurrentNamespace).Delete(
 		context.TODO(),
 		saName,
 		metav1.DeleteOptions{
@@ -82,7 +90,7 @@ func (sa *ServiceAccount) Delete(saName string) error {
 
 // List List all pods in a namespace
 func (sa *ServiceAccount) List() (*apiv1.ServiceAccountList, error) {
-	serviceAccountList, err := sa.client.List(
+	serviceAccountList, err := sa.client.ServiceAccounts(sa.CurrentNamespace).List(
 		context.TODO(),
 		metav1.ListOptions{},
 	)

@@ -12,7 +12,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func initServiceAccounts() *actions.Actions {
+func initServiceAccounts() *actions.ServiceAccount {
 	info := map[string]string{
 		"service1": "default",
 		"service2": "default",
@@ -29,14 +29,15 @@ func initServiceAccounts() *actions.Actions {
 	objectsDynamic := []runtime.Object{}
 
 	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
-	actions := actions.NewTestActions(client, dynamicClient, &rest.Config{})
+	actions := actions.NewTestActions(client, dynamicClient, &rest.Config{}).ServiceAccount
+	actions.Namespace("default")
 
 	return actions
 }
 
 func TestGetServiceAccounts(t *testing.T) {
 	actions := initServiceAccounts()
-	serviceAccount, _ := actions.ServiceAccount.Get("service3")
+	serviceAccount, _ := actions.Get("service3")
 	assert.Equal(t, "service3", serviceAccount.Name)
 }
 
@@ -49,32 +50,32 @@ func TestCreateServiceAccount(t *testing.T) {
 		SetAnnotations(map[string]string{"annotation": "my-annotation"}).
 		Build()
 
-	actions.ServiceAccount.Create(buildedServiceAccount)
-	newServiceAccount, _ := actions.ServiceAccount.Get("service5")
-	serviceAccounts, _ := actions.ServiceAccount.List()
+	actions.Create(buildedServiceAccount)
+	newServiceAccount, _ := actions.Get("service5")
+	serviceAccounts, _ := actions.List()
 	assert.Equal(t, "service5", newServiceAccount.Name)
 	assert.Equal(t, 5, len(serviceAccounts.Items))
 }
 
 func TestUpdateServiceAccount(t *testing.T) {
 	actions := initServiceAccounts()
-	serviceAccount, _ := actions.ServiceAccount.Get("service1")
+	serviceAccount, _ := actions.Get("service1")
 	serviceAccount.Labels = map[string]string{
 		"label": "my-label",
 	}
 	serviceAccount.Annotations = map[string]string{
 		"annotation": "my-annotation",
 	}
-	actions.ServiceAccount.Update(serviceAccount)
-	serviceAccountUpdated, _ := actions.ServiceAccount.Get("service1")
+	actions.Update(serviceAccount)
+	serviceAccountUpdated, _ := actions.Get("service1")
 	assert.Equal(t, map[string]string{"label": "my-label"}, serviceAccountUpdated.Labels)
 	assert.Equal(t, map[string]string{"annotation": "my-annotation"}, serviceAccountUpdated.Annotations)
 }
 
 func TestDeleteServiceAccount(t *testing.T) {
 	actions := initServiceAccounts()
-	actions.ServiceAccount.Delete("service3")
-	services, _ := actions.ServiceAccount.List()
+	actions.Delete("service3")
+	services, _ := actions.List()
 	assert.Equal(t, 3, len(services.Items))
 	for _, service := range services.Items {
 		assert.NotEqual(t, "service3", service.Name)
@@ -83,6 +84,6 @@ func TestDeleteServiceAccount(t *testing.T) {
 
 func TestListServiceAccount(t *testing.T) {
 	actions := initServiceAccounts()
-	serviceAccounts, _ := actions.ServiceAccount.List()
+	serviceAccounts, _ := actions.List()
 	assert.Equal(t, 4, len(serviceAccounts.Items))
 }
