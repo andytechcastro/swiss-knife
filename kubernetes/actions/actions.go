@@ -17,6 +17,7 @@ type Actions struct {
 	Service          *Service
 	Pod              *Pod
 	Deployment       *Deployment
+	Custom           *Custom
 }
 
 // NewActions get an actions interface
@@ -48,6 +49,7 @@ func NewTestActions(clientSet kubernetes.Interface, dynamicClient dynamic.Interf
 		Deployment:       NewDeploymentAction(appsV1Client),
 		Pod:              NewPodAction(coreV1Client),
 		ServiceAccount:   NewServiceAccountAction(coreV1Client),
+		Custom:           NewCustomActions(dynamicClient),
 	}
 }
 
