@@ -40,7 +40,7 @@ func initServices() *actions.Service {
 	objectsDynamic := []runtime.Object{}
 
 	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
-	actions := actions.NewTestActions(client, dynamicClient, &rest.Config{}).Service
+	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).Service
 	actions.Namespace("default")
 	return actions
 }

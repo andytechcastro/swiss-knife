@@ -29,7 +29,7 @@ func initServiceAccounts() *actions.ServiceAccount {
 	objectsDynamic := []runtime.Object{}
 
 	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
-	actions := actions.NewTestActions(client, dynamicClient, &rest.Config{}).ServiceAccount
+	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).ServiceAccount
 	actions.Namespace("default")
 
 	return actions

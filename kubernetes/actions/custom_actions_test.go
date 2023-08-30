@@ -39,7 +39,7 @@ func initCustom() *actions.Custom {
 	client := fake.NewSimpleClientset(objects...)
 
 	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
-	actions := actions.NewTestActions(client, dynamicClient, &rest.Config{}).Custom
+	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).Custom
 	actions.Namespace("default")
 	gVR := schema.GroupVersionResource{
 		Group:    "",

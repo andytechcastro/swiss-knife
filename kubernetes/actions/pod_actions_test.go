@@ -38,7 +38,7 @@ func initPod() *actions.Pod {
 	objectsDynamic := []runtime.Object{}
 	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
 	client := fake.NewSimpleClientset(objects...)
-	actions := actions.NewTestActions(client, dynamicClient, &rest.Config{}).Pod
+	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).Pod
 	actions.Namespace("default")
 	return actions
 }

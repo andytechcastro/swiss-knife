@@ -39,7 +39,7 @@ func initNamespaces() *actions.Namespace {
 	})
 	objects := []runtime.Object{}
 	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objects...)
-	actions := actions.NewTestActions(client, dynamicClient, &rest.Config{}).Namespace
+	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).Namespace
 	return actions
 }
 

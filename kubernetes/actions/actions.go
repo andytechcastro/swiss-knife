@@ -18,25 +18,24 @@ type Actions struct {
 	Pod              *Pod
 	Deployment       *Deployment
 	Custom           *Custom
+	ConfigMap        *ConfigMap
 }
 
 // NewActions get an actions interface
-func NewActions(client kubernetes.Interface) *Actions {
-	return &Actions{
-		client:           client,
-		CurrentNamespace: "default",
-		AllNamespaces:    false,
+func NewActions(config *rest.Config) (*Actions, error) {
+	client, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return nil, err
 	}
+	dynamicClient, err := dynamic.NewForConfig(config)
+	if err != nil {
+		return nil, err
+	}
+	return GetActionFilled(client, dynamicClient, config), nil
 }
 
-// NewTestActions return an action from dynamic client
-func NewTestActions(clientSet kubernetes.Interface, dynamicClient dynamic.Interface, config *rest.Config) *Actions {
-	//serviceAccountRes := schema.GroupVersionResource{
-	//	Group:    "",
-	//	Version:  "v1",
-	//	Resource: "serviceaccounts",
-	//}
-	//serviceAccount := dynamicClient.Resource(serviceAccountRes).Namespace("default")
+// GetActionFilled return an action from dynamic client
+func GetActionFilled(clientSet kubernetes.Interface, dynamicClient dynamic.Interface, config *rest.Config) *Actions {
 	coreV1Client := clientSet.CoreV1()
 	appsV1Client := clientSet.AppsV1()
 	return &Actions{
@@ -50,6 +49,7 @@ func NewTestActions(clientSet kubernetes.Interface, dynamicClient dynamic.Interf
 		Pod:              NewPodAction(coreV1Client),
 		ServiceAccount:   NewServiceAccountAction(coreV1Client),
 		Custom:           NewCustomActions(dynamicClient),
+		ConfigMap:        NewConfigMapAction(coreV1Client),
 	}
 }
 

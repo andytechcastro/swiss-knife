@@ -40,7 +40,7 @@ func initDeployment() *actions.Deployment {
 	client := fake.NewSimpleClientset(objects...)
 	objectsDynamic := []runtime.Object{}
 	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
-	actions := actions.NewTestActions(client, dynamicClient, &rest.Config{}).Deployment
+	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).Deployment
 	actions.Namespace("default")
 	return actions
 }
