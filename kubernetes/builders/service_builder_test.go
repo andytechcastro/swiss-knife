@@ -22,11 +22,10 @@ func initService() *builders.Service {
 func TestBuildServiceClusterIP(t *testing.T) {
 	service := initService()
 	service.Selector = map[string]string{"service": ServiceName}
-	ports := builders.Ports{
-		Protocol:   "TCP",
-		Port:       80,
-		TargetPort: intstr.FromInt(8080),
-	}
+	ports := builders.NewServicePort()
+	ports.SetProtocol("TCP").
+		SetPort(80).
+		SetTargetPort(8080)
 	service.AddPorts(ports.Build())
 	buildedService, _ := service.Build()
 	assert.Equal(t, ServiceName, buildedService.Name)

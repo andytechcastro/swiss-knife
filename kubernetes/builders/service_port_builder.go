@@ -15,6 +15,11 @@ type Ports struct {
 	ServicePort *apiv1.ServicePort
 }
 
+// NewServicePort get a new service port
+func NewServicePort() *Ports {
+	return &Ports{}
+}
+
 // SetName set name of the service port
 func (p *Ports) SetName(name string) *Ports {
 	p.Name = name
