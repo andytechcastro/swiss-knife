@@ -45,6 +45,12 @@ func (c *ConfigMap) SetLabels(labels map[string]string) *ConfigMap {
 	return c
 }
 
+// SetAnnotations set labels in the configmap
+func (c *ConfigMap) SetAnnotations(annotations map[string]string) *ConfigMap {
+	c.Annotations = annotations
+	return c
+}
+
 // SetData set the data of the configmap
 func (c *ConfigMap) SetData(data map[string]string) *ConfigMap {
 	c.Data = data

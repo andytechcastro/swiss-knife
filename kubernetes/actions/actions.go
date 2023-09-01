@@ -19,6 +19,7 @@ type Actions struct {
 	Deployment       *Deployment
 	Custom           *Custom
 	ConfigMap        *ConfigMap
+	Secret           *Secret
 }
 
 // NewActions get an actions interface
@@ -50,6 +51,7 @@ func GetActionFilled(clientSet kubernetes.Interface, dynamicClient dynamic.Inter
 		ServiceAccount:   NewServiceAccountAction(coreV1Client),
 		Custom:           NewCustomActions(dynamicClient),
 		ConfigMap:        NewConfigMapAction(coreV1Client),
+		Secret:           NewSecretAction(coreV1Client),
 	}
 }
 
