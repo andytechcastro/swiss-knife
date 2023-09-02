@@ -32,8 +32,6 @@ func TestConfigMapToYaml(t *testing.T) {
 	yamlCM := configmap.ToYaml()
 	interfaceResult := map[string]interface{}(
 		map[string]interface{}{
-			"apiVersion": "v1",
-			"kind":       "ConfigMap",
 			"metadata": map[string]interface{}{
 				"creationTimestamp": interface{}(nil),
 				"name":              "configmap",

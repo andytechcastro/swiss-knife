@@ -3,7 +3,7 @@ package builders
 import (
 	"fmt"
 
-	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/yaml"
 )
@@ -16,7 +16,7 @@ type ConfigMap struct {
 	Annotations map[string]string
 	Data        map[string]string
 	Immutable   bool
-	ConfigMap   *apiv1.ConfigMap
+	ConfigMap   *corev1.ConfigMap
 }
 
 // NewConfigMapBuilder return a ConfigMap
@@ -70,12 +70,8 @@ func (c *ConfigMap) SetImmutable() *ConfigMap {
 }
 
 // Build build a configmap
-func (c *ConfigMap) Build() *apiv1.ConfigMap {
-	configMap := &apiv1.ConfigMap{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "ConfigMap",
-			APIVersion: "v1",
-		},
+func (c *ConfigMap) Build() *corev1.ConfigMap {
+	configMap := &corev1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      c.Name,
 			Namespace: c.Namespace,

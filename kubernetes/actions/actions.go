@@ -15,6 +15,7 @@ type Actions struct {
 	Service        *Service
 	Pod            *Pod
 	Deployment     *Deployment
+	ReplicaSet     *ReplicaSet
 	Custom         *Custom
 	ConfigMap      *ConfigMap
 	Secret         *Secret
@@ -43,6 +44,7 @@ func GetActionFilled(clientSet kubernetes.Interface, dynamicClient dynamic.Inter
 		Namespace:      NewNamespaceAction(coreV1Client.Namespaces()),
 		Service:        NewServiceAction(coreV1Client),
 		Deployment:     NewDeploymentAction(appsV1Client),
+		ReplicaSet:     NewReplicaSetAction(appsV1Client),
 		Pod:            NewPodAction(coreV1Client),
 		ServiceAccount: NewServiceAccountAction(coreV1Client),
 		Custom:         NewCustomActions(dynamicClient),

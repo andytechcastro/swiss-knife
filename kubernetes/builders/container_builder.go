@@ -1,7 +1,7 @@
 package builders
 
 import (
-	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 )
 
 // Container Struct for containers
@@ -10,7 +10,7 @@ type Container struct {
 	Image     string
 	Tag       string
 	Port      int32
-	Container *apiv1.Container
+	Container *corev1.Container
 }
 
 // NewContainerBuilder return a container struct
@@ -43,14 +43,14 @@ func (c *Container) SetPort(port int32) *Container {
 }
 
 // Build build container
-func (c *Container) Build() *apiv1.Container {
-	container := &apiv1.Container{
+func (c *Container) Build() *corev1.Container {
+	container := &corev1.Container{
 		Name:  c.Name,
 		Image: c.Image + ":" + c.Tag,
-		Ports: []apiv1.ContainerPort{
+		Ports: []corev1.ContainerPort{
 			{
 				Name:          "http",
-				Protocol:      apiv1.ProtocolTCP,
+				Protocol:      corev1.ProtocolTCP,
 				ContainerPort: c.Port,
 			},
 		},

@@ -38,8 +38,6 @@ func TestServiceAccountToYaml(t *testing.T) {
 	serviceAccount.Build()
 	yamlServiceAccount := serviceAccount.ToYaml()
 	interfaceResult := map[string]interface{}{
-		"apiVersion": "v1",
-		"kind":       "ServiceAccount",
 		"metadata": map[string]interface{}{
 			"annotations": map[string]interface{}{
 				"annotation": "my-annotation",

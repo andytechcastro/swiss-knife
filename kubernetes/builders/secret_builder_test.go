@@ -55,8 +55,6 @@ func TestSecretToYaml(t *testing.T) {
 	yamlSecret := secret.ToYaml()
 	interfaceResult := map[string]interface{}(
 		map[string]interface{}{
-			"apiVersion": "v1",
-			"kind":       "Secret",
 			"metadata": map[string]interface{}{
 				"creationTimestamp": interface{}(nil),
 				"name":              "my-secret",

@@ -27,13 +27,15 @@ func initDeployment() *actions.Deployment {
 			SetImage(image).
 			SetTag("1").
 			SetPort(80)
+		pod := builders.NewPodBuilder()
+		pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
 		buildedDeployment := deployment.SetName(name).
 			SetNamespace("default").
 			SetLabels(map[string]string{"test": "testing"}).
 			SetAnnotations(map[string]string{"annotation": "testAnnotation"}).
 			SetReplicas(3).
 			SetMatchLabels(map[string]string{"test": "testingmatch"}).
-			AddContainer(*container.Build()).
+			SetPodTemplate(*pod.BuildTemplate()).
 			Build()
 		objects = append(objects, buildedDeployment)
 	}
@@ -60,11 +62,13 @@ func TestCreateDeployment(t *testing.T) {
 		SetImage("java").
 		SetTag("3").
 		SetPort(80)
+	pod := builders.NewPodBuilder()
+	pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
 	buildedDeployment := deployment.SetName("service5").
 		SetNamespace("default").
 		SetLabels(map[string]string{"test": "testing"}).
 		SetAnnotations(map[string]string{"annotation": "testAnnotation"}).
-		AddContainer(*container.Build()).
+		SetPodTemplate(*pod.BuildTemplate()).
 		Build()
 	actions.Create(buildedDeployment)
 	newDeployment, _ := actions.Get("service5")

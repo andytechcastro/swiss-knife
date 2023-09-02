@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	appsv1 "k8s.io/api/apps/v1"
-	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/yaml"
 )
@@ -17,7 +17,7 @@ type Deployment struct {
 	Labels      map[string]string
 	Annotations map[string]string
 	MatchLabels map[string]string
-	Containers  []apiv1.Container
+	PodTemplate corev1.PodTemplateSpec
 	Deployment  *appsv1.Deployment
 }
 
@@ -35,12 +35,6 @@ func (d *Deployment) SetName(name string) *Deployment {
 // SetNamespace Set namespace for deployment
 func (d *Deployment) SetNamespace(namespace string) *Deployment {
 	d.Namespace = namespace
-	return d
-}
-
-// AddContainer Add new container to deployment
-func (d *Deployment) AddContainer(container apiv1.Container) *Deployment {
-	d.Containers = append(d.Containers, container)
 	return d
 }
 
@@ -68,13 +62,15 @@ func (d *Deployment) SetMatchLabels(matchLabels map[string]string) *Deployment {
 	return d
 }
 
+// SetPodTemplate set pod template for deployment
+func (d *Deployment) SetPodTemplate(podTemplate corev1.PodTemplateSpec) *Deployment {
+	d.PodTemplate = podTemplate
+	return d
+}
+
 // Build Build de deployment interface
 func (d *Deployment) Build() *appsv1.Deployment {
 	deployment := &appsv1.Deployment{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "Deployment",
-			APIVersion: "apps/v1",
-		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        d.Name,
 			Namespace:   d.Namespace,
@@ -86,14 +82,7 @@ func (d *Deployment) Build() *appsv1.Deployment {
 			Selector: &metav1.LabelSelector{
 				MatchLabels: d.MatchLabels,
 			},
-			Template: apiv1.PodTemplateSpec{
-				ObjectMeta: metav1.ObjectMeta{
-					Labels: d.MatchLabels,
-				},
-				Spec: apiv1.PodSpec{
-					Containers: d.Containers,
-				},
-			},
+			Template: d.PodTemplate,
 		},
 	}
 	d.Deployment = deployment

@@ -4,9 +4,8 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
-	kube "github.com/andytechcastro/swiss-knife/kubernetes/builders"
 	"github.com/stretchr/testify/assert"
-	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/yaml"
 )
@@ -14,7 +13,7 @@ import (
 const ServiceName = "my-service"
 
 func initService() *builders.Service {
-	service := kube.NewServiceBuilder()
+	service := builders.NewServiceBuilder()
 	service.SetName(ServiceName)
 	return service
 }
@@ -29,8 +28,8 @@ func TestBuildServiceClusterIP(t *testing.T) {
 	service.AddPorts(ports.Build())
 	buildedService, _ := service.Build()
 	assert.Equal(t, ServiceName, buildedService.Name)
-	assert.Equal(t, apiv1.ServiceTypeClusterIP, buildedService.Spec.Type)
-	assert.Equal(t, apiv1.ProtocolTCP, buildedService.Spec.Ports[0].Protocol)
+	assert.Equal(t, corev1.ServiceTypeClusterIP, buildedService.Spec.Type)
+	assert.Equal(t, corev1.ProtocolTCP, buildedService.Spec.Ports[0].Protocol)
 	assert.Equal(t, int32(80), buildedService.Spec.Ports[0].Port)
 	assert.Equal(t, intstr.FromInt(8080), buildedService.Spec.Ports[0].TargetPort)
 }
@@ -41,7 +40,7 @@ func TestBuildServiceExternalName(t *testing.T) {
 		SetType("ExternalName").
 		Build()
 	assert.Equal(t, ServiceName, buildedService.Name)
-	assert.Equal(t, apiv1.ServiceTypeExternalName, buildedService.Spec.Type)
+	assert.Equal(t, corev1.ServiceTypeExternalName, buildedService.Spec.Type)
 	assert.Equal(t, ServiceName, buildedService.Spec.ExternalName)
 }
 
@@ -71,8 +70,6 @@ func TestServiceToYaml(t *testing.T) {
 	yamlService := service.ToYaml()
 	interfaceResult := map[string]interface{}(
 		map[string]interface{}{
-			"apiVersion": "v1",
-			"kind":       "Service",
 			"metadata": map[string]interface{}{
 				"creationTimestamp": interface{}(nil),
 				"name":              ServiceName,

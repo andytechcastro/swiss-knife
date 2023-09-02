@@ -4,13 +4,12 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
-	kube "github.com/andytechcastro/swiss-knife/kubernetes/builders"
 	"github.com/stretchr/testify/assert"
 	"sigs.k8s.io/yaml"
 )
 
 func initNamespace() *builders.Namespace {
-	namespace := kube.NewNamespaceBuilder()
+	namespace := builders.NewNamespaceBuilder()
 	namespace.SetName("default").
 		SetAnnotations(map[string]string{"my-first": "annotation"}).
 		SetLabels(map[string]string{"my-first": "label"})
@@ -29,8 +28,6 @@ func TestNamespaceToYaml(t *testing.T) {
 	yamlNS := namespace.ToYaml()
 	interfaceResult := map[string]interface{}(
 		map[string]interface{}{
-			"apiVersion": "v1",
-			"kind":       "Namespace",
 			"metadata": map[string]interface{}{
 				"creationTimestamp": interface{}(nil),
 				"name":              "default",

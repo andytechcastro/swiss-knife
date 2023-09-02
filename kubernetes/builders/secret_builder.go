@@ -3,7 +3,7 @@ package builders
 import (
 	"fmt"
 
-	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/yaml"
 )
@@ -17,8 +17,8 @@ type Secret struct {
 	Data        map[string][]byte
 	StringData  map[string]string
 	Immutable   bool
-	Type        apiv1.SecretType
-	Secret      *apiv1.Secret
+	Type        corev1.SecretType
+	Secret      *corev1.Secret
 }
 
 // NewSecretBuilder get a sercret builder
@@ -69,18 +69,14 @@ func (s *Secret) SetStringData(data map[string]string) *Secret {
 }
 
 // SetType set the secret type
-func (s *Secret) SetType(secretType apiv1.SecretType) *Secret {
+func (s *Secret) SetType(secretType corev1.SecretType) *Secret {
 	s.Type = secretType
 	return s
 }
 
 // Build a secret
-func (s *Secret) Build() *apiv1.Secret {
-	secret := &apiv1.Secret{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "Secret",
-			APIVersion: "v1",
-		},
+func (s *Secret) Build() *corev1.Secret {
+	secret := &corev1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        s.Name,
 			Namespace:   s.Namespace,

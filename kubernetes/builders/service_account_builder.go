@@ -3,7 +3,7 @@ package builders
 import (
 	"fmt"
 
-	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/yaml"
 )
@@ -14,7 +14,7 @@ type ServiceAccount struct {
 	Namespace      string
 	Labels         map[string]string
 	Annotations    map[string]string
-	ServiceAccount *apiv1.ServiceAccount
+	ServiceAccount *corev1.ServiceAccount
 }
 
 // NewServiceAccountBuilder return ServiceAccountBuilder
@@ -47,12 +47,8 @@ func (sa *ServiceAccount) SetAnnotations(annotations map[string]string) *Service
 }
 
 // Build Build Namespace object
-func (sa *ServiceAccount) Build() *apiv1.ServiceAccount {
-	serviceAccount := &apiv1.ServiceAccount{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "ServiceAccount",
-			APIVersion: "v1",
-		},
+func (sa *ServiceAccount) Build() *corev1.ServiceAccount {
+	serviceAccount := &corev1.ServiceAccount{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        sa.Name,
 			Labels:      sa.Labels,

@@ -1,7 +1,7 @@
 package builders
 
 import (
-	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
@@ -9,10 +9,10 @@ import (
 type Ports struct {
 	Name        string
 	Port        int32
-	Protocol    apiv1.Protocol
+	Protocol    corev1.Protocol
 	TargetPort  intstr.IntOrString
 	NodePort    int32
-	ServicePort *apiv1.ServicePort
+	ServicePort *corev1.ServicePort
 }
 
 // NewServicePort get a new service port
@@ -33,7 +33,7 @@ func (p *Ports) SetPort(port int32) *Ports {
 }
 
 // SetProtocol set protocol of the service port
-func (p *Ports) SetProtocol(protocol apiv1.Protocol) *Ports {
+func (p *Ports) SetProtocol(protocol corev1.Protocol) *Ports {
 	p.Protocol = protocol
 	return p
 }
@@ -51,8 +51,8 @@ func (p *Ports) SetNodePort(nodePort int32) *Ports {
 }
 
 // Build build the service port
-func (p *Ports) Build() *apiv1.ServicePort {
-	p.ServicePort = &apiv1.ServicePort{
+func (p *Ports) Build() *corev1.ServicePort {
+	p.ServicePort = &corev1.ServicePort{
 		Name:       p.Name,
 		Port:       p.Port,
 		Protocol:   p.Protocol,

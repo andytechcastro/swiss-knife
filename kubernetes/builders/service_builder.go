@@ -3,7 +3,7 @@ package builders
 import (
 	"fmt"
 
-	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/yaml"
 )
@@ -12,20 +12,20 @@ import (
 type Service struct {
 	Name         string
 	Namespace    string
-	Type         apiv1.ServiceType
+	Type         corev1.ServiceType
 	Selector     map[string]string
 	ClusterIP    string
 	Labels       map[string]string
 	Annotations  map[string]string
-	Ports        []apiv1.ServicePort
+	Ports        []corev1.ServicePort
 	ExternalName string
-	Service      *apiv1.Service
+	Service      *corev1.Service
 }
 
 // NewServiceBuilder return a service
 func NewServiceBuilder() *Service {
 	return &Service{
-		Type: apiv1.ServiceTypeClusterIP,
+		Type: corev1.ServiceTypeClusterIP,
 	}
 }
 
@@ -44,7 +44,7 @@ func (s *Service) SetNamespace(namespace string) *Service {
 // SetType Set the type of a service
 // The options could be "ClusterIP", "NodePort", "LoadBalancer" or "ExternalName"
 // or use this contants https://pkg.go.dev/k8s.io/api/core/v1#ServiceType
-func (s *Service) SetType(t apiv1.ServiceType) *Service {
+func (s *Service) SetType(t corev1.ServiceType) *Service {
 	s.Type = t
 	return s
 }
@@ -74,7 +74,7 @@ func (s *Service) SetLabels(labels map[string]string) *Service {
 }
 
 // AddPorts add ports to the service
-func (s *Service) AddPorts(ports *apiv1.ServicePort) *Service {
+func (s *Service) AddPorts(ports *corev1.ServicePort) *Service {
 	s.Ports = append(s.Ports, *ports)
 	return s
 }
@@ -86,23 +86,19 @@ func (s *Service) SetAnnotations(annotations map[string]string) *Service {
 }
 
 // Build Build a service with the data
-func (s *Service) Build() (*apiv1.Service, error) {
+func (s *Service) Build() (*corev1.Service, error) {
 	err := s.Validate()
 	if err != nil {
 		return nil, err
 	}
-	service := &apiv1.Service{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "Service",
-			APIVersion: "v1",
-		},
+	service := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        s.Name,
 			Namespace:   s.Namespace,
 			Labels:      s.Labels,
 			Annotations: s.Annotations,
 		},
-		Spec: apiv1.ServiceSpec{
+		Spec: corev1.ServiceSpec{
 			Type:         s.Type,
 			Selector:     s.Selector,
 			ExternalName: s.ExternalName,
@@ -124,13 +120,13 @@ func (s *Service) ToYaml() []byte {
 
 // Validate validate the values for build a service
 func (s *Service) Validate() error {
-	if s.Type == apiv1.ServiceTypeClusterIP || s.Type == apiv1.ServiceTypeNodePort {
+	if s.Type == corev1.ServiceTypeClusterIP || s.Type == corev1.ServiceTypeNodePort {
 		if s.Selector == nil {
 			return errorSelectorEmpty
 		} else if s.Ports == nil {
 			return errorPortsEmpty
 		}
-	} else if s.Type == apiv1.ServiceTypeExternalName {
+	} else if s.Type == corev1.ServiceTypeExternalName {
 		if s.ExternalName == "" {
 			return errorExternalNameEmpty
 		}

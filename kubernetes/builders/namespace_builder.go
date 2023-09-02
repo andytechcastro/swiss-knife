@@ -3,7 +3,7 @@ package builders
 import (
 	"fmt"
 
-	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/yaml"
 )
@@ -13,7 +13,7 @@ type Namespace struct {
 	Name        string
 	Labels      map[string]string
 	Annotations map[string]string
-	Namespace   *apiv1.Namespace
+	Namespace   *corev1.Namespace
 }
 
 // NewNamespaceBuilder return a namespace builder
@@ -40,12 +40,8 @@ func (n *Namespace) SetAnnotations(annotations map[string]string) *Namespace {
 }
 
 // Build build a namespace
-func (n *Namespace) Build() *apiv1.Namespace {
-	namespace := &apiv1.Namespace{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "Namespace",
-			APIVersion: "v1",
-		},
+func (n *Namespace) Build() *corev1.Namespace {
+	namespace := &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        n.Name,
 			Labels:      n.Labels,
