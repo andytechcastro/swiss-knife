@@ -13,8 +13,7 @@ import (
 const ServiceName = "my-service"
 
 func initService() *builders.Service {
-	service := builders.NewServiceBuilder()
-	service.SetName(ServiceName)
+	service := builders.NewServiceBuilder(ServiceName)
 	return service
 }
 

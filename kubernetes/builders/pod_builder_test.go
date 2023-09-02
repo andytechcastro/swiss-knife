@@ -14,9 +14,8 @@ func initPod() *builders.Pod {
 		SetImage("nginx").
 		SetTag("1").
 		SetPort(80)
-	pod := builders.NewPodBuilder()
+	pod := builders.NewPodBuilder("test")
 	pod.AddContainer(*container.Build()).
-		SetName("test").
 		SetNamespace("testNamespace").
 		SetLabels(map[string]string{"test": "testing"}).
 		SetAnnotations(map[string]string{"annotation": "testAnnotation"})

@@ -21,8 +21,8 @@ func initServiceAccounts() *actions.ServiceAccount {
 	}
 	objects := []runtime.Object{}
 	for name, namespace := range info {
-		sa := builders.NewServiceAccountBuilder()
-		sas := sa.SetName(name).SetNamespace(namespace).Build()
+		sa := builders.NewServiceAccountBuilder(name)
+		sas := sa.SetNamespace(namespace).Build()
 		objects = append(objects, sas)
 	}
 	client := fake.NewSimpleClientset(objects...)
@@ -43,9 +43,8 @@ func TestGetServiceAccounts(t *testing.T) {
 
 func TestCreateServiceAccount(t *testing.T) {
 	actions := initServiceAccounts()
-	serviceAccount := builders.NewServiceAccountBuilder()
-	buildedServiceAccount := serviceAccount.SetName("service5").
-		SetNamespace("default").
+	serviceAccount := builders.NewServiceAccountBuilder("service5")
+	buildedServiceAccount := serviceAccount.SetNamespace("default").
 		SetLabels(map[string]string{"label": "my-label"}).
 		SetAnnotations(map[string]string{"annotation": "my-annotation"}).
 		Build()

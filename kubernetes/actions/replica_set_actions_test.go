@@ -21,16 +21,15 @@ func initReplicaSet() *actions.ReplicaSet {
 	}
 	objects := []runtime.Object{}
 	for name, image := range info {
-		replicaSet := builders.NewReplicaSetBuilder()
+		replicaSet := builders.NewReplicaSetBuilder(name)
 		container := builders.NewContainerBuilder()
 		container.SetName("testContainer").
 			SetImage(image).
 			SetTag("1").
 			SetPort(80)
-		pod := builders.NewPodBuilder()
+		pod := builders.NewPodBuilder(name)
 		pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
-		buildedReplicaSet := replicaSet.SetName(name).
-			SetNamespace("default").
+		buildedReplicaSet := replicaSet.SetNamespace("default").
 			SetLabels(map[string]string{"test": "testing"}).
 			SetAnnotations(map[string]string{"annotation": "testAnnotation"}).
 			SetReplicas(3).
@@ -56,16 +55,15 @@ func TestGetReplicaSet(t *testing.T) {
 
 func TestCreateReplicaSet(t *testing.T) {
 	actions := initReplicaSet()
-	replicaSet := builders.NewReplicaSetBuilder()
+	replicaSet := builders.NewReplicaSetBuilder("replicaset5")
 	container := builders.NewContainerBuilder()
 	container.SetName("testContainer").
 		SetImage("java").
 		SetTag("3").
 		SetPort(80)
-	pod := builders.NewPodBuilder()
+	pod := builders.NewPodBuilder("replicaset5")
 	pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
-	buildedReplicaSet := replicaSet.SetName("replicaset5").
-		SetNamespace("default").
+	buildedReplicaSet := replicaSet.SetNamespace("default").
 		SetLabels(map[string]string{"test": "testing"}).
 		SetAnnotations(map[string]string{"annotation": "testAnnotation"}).
 		SetPodTemplate(*pod.BuildTemplate()).

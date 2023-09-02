@@ -22,14 +22,10 @@ type Secret struct {
 }
 
 // NewSecretBuilder get a sercret builder
-func NewSecretBuilder() *Secret {
-	return &Secret{}
-}
-
-// SetName set the name of the secret
-func (s *Secret) SetName(name string) *Secret {
-	s.Name = name
-	return s
+func NewSecretBuilder(name string) *Secret {
+	return &Secret{
+		Name: name,
+	}
 }
 
 // SetNamespace set the namespace of the secret

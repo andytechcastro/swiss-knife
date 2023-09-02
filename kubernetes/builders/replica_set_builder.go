@@ -22,14 +22,10 @@ type ReplicaSet struct {
 }
 
 // NewReplicaSetBuilder return a ReplicaSet builder
-func NewReplicaSetBuilder() *ReplicaSet {
-	return &ReplicaSet{}
-}
-
-// SetName set the replicaset name
-func (rs *ReplicaSet) SetName(name string) *ReplicaSet {
-	rs.Name = name
-	return rs
+func NewReplicaSetBuilder(name string) *ReplicaSet {
+	return &ReplicaSet{
+		Name: name,
+	}
 }
 
 // SetNamespace set the namespace of the replicaset

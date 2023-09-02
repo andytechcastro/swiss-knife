@@ -9,9 +9,8 @@ import (
 )
 
 func initConfigMap() *builders.ConfigMap {
-	configmap := builders.NewConfigMapBuilder()
-	configmap.SetName("configmap").
-		SetNamespace("default").
+	configmap := builders.NewConfigMapBuilder("configmap")
+	configmap.SetNamespace("default").
 		SetData(map[string]string{
 			"myKey": "myValue",
 		})

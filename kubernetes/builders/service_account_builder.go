@@ -18,14 +18,10 @@ type ServiceAccount struct {
 }
 
 // NewServiceAccountBuilder return ServiceAccountBuilder
-func NewServiceAccountBuilder() *ServiceAccount {
-	return &ServiceAccount{}
-}
-
-// SetName set name for service account
-func (sa *ServiceAccount) SetName(name string) *ServiceAccount {
-	sa.Name = name
-	return sa
+func NewServiceAccountBuilder(name string) *ServiceAccount {
+	return &ServiceAccount{
+		Name: name,
+	}
 }
 
 // SetNamespace set namespace for service account

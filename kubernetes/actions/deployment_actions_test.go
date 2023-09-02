@@ -21,16 +21,15 @@ func initDeployment() *actions.Deployment {
 	}
 	objects := []runtime.Object{}
 	for name, image := range info {
-		deployment := builders.NewDeploymentBuilder()
+		deployment := builders.NewDeploymentBuilder(name)
 		container := builders.NewContainerBuilder()
 		container.SetName("testContainer").
 			SetImage(image).
 			SetTag("1").
 			SetPort(80)
-		pod := builders.NewPodBuilder()
+		pod := builders.NewPodBuilder(name)
 		pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
-		buildedDeployment := deployment.SetName(name).
-			SetNamespace("default").
+		buildedDeployment := deployment.SetNamespace("default").
 			SetLabels(map[string]string{"test": "testing"}).
 			SetAnnotations(map[string]string{"annotation": "testAnnotation"}).
 			SetReplicas(3).
@@ -56,16 +55,15 @@ func TestGetDeployment(t *testing.T) {
 
 func TestCreateDeployment(t *testing.T) {
 	actions := initDeployment()
-	deployment := builders.NewDeploymentBuilder()
+	deployment := builders.NewDeploymentBuilder("service5")
 	container := builders.NewContainerBuilder()
 	container.SetName("testContainer").
 		SetImage("java").
 		SetTag("3").
 		SetPort(80)
-	pod := builders.NewPodBuilder()
+	pod := builders.NewPodBuilder("service5")
 	pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
-	buildedDeployment := deployment.SetName("service5").
-		SetNamespace("default").
+	buildedDeployment := deployment.SetNamespace("default").
 		SetLabels(map[string]string{"test": "testing"}).
 		SetAnnotations(map[string]string{"annotation": "testAnnotation"}).
 		SetPodTemplate(*pod.BuildTemplate()).

@@ -11,9 +11,8 @@ import (
 )
 
 func initSecret() *builders.Secret {
-	secret := builders.NewSecretBuilder()
-	secret.SetName("my-secret").
-		SetNamespace("default")
+	secret := builders.NewSecretBuilder("my-secret")
+	secret.SetNamespace("default")
 	return secret
 }
 

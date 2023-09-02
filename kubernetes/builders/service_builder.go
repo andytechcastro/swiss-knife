@@ -23,16 +23,11 @@ type Service struct {
 }
 
 // NewServiceBuilder return a service
-func NewServiceBuilder() *Service {
+func NewServiceBuilder(name string) *Service {
 	return &Service{
+		Name: name,
 		Type: corev1.ServiceTypeClusterIP,
 	}
-}
-
-// SetName Set the name of the service
-func (s *Service) SetName(name string) *Service {
-	s.Name = name
-	return s
 }
 
 // SetNamespace Set the namespace of the service

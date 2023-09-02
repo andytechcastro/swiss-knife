@@ -9,9 +9,8 @@ import (
 )
 
 func initNamespace() *builders.Namespace {
-	namespace := builders.NewNamespaceBuilder()
-	namespace.SetName("default").
-		SetAnnotations(map[string]string{"my-first": "annotation"}).
+	namespace := builders.NewNamespaceBuilder("default")
+	namespace.SetAnnotations(map[string]string{"my-first": "annotation"}).
 		SetLabels(map[string]string{"my-first": "label"})
 	return namespace
 }

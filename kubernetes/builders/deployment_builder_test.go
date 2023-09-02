@@ -14,11 +14,10 @@ func initDeployment() *builders.Deployment {
 		SetImage("nginx").
 		SetTag("1").
 		SetPort(80)
-	pod := builders.NewPodBuilder()
+	pod := builders.NewPodBuilder("test")
 	pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
-	deployment := builders.NewDeploymentBuilder()
+	deployment := builders.NewDeploymentBuilder("test")
 	deployment.SetPodTemplate(*pod.BuildTemplate()).
-		SetName("test").
 		SetNamespace("testNamespace").
 		SetReplicas(3).
 		SetLabels(map[string]string{"test": "testing"}).

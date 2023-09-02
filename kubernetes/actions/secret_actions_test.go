@@ -21,9 +21,8 @@ func initSecret() *actions.Secret {
 	}
 	objects := []runtime.Object{}
 	for name, secretValue := range info {
-		secret := builders.NewSecretBuilder()
-		buildedSecret := secret.SetName(name).
-			SetNamespace("default").
+		secret := builders.NewSecretBuilder(name)
+		buildedSecret := secret.SetNamespace("default").
 			SetType("kubernetes.io/basic-auth").
 			SetStringData(map[string]string{
 				"username": name,
@@ -49,9 +48,8 @@ func TestGetSecret(t *testing.T) {
 
 func TestCreateSecret(t *testing.T) {
 	actions := initSecret()
-	secret := builders.NewSecretBuilder()
-	buildedSecret := secret.SetName("secret5").
-		SetNamespace("default").
+	secret := builders.NewSecretBuilder("secret5")
+	buildedSecret := secret.SetNamespace("default").
 		SetType("kubernetes.io/basic-auth").
 		SetStringData(map[string]string{
 			"username": "secret5",

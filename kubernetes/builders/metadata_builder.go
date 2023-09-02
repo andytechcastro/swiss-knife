@@ -19,12 +19,6 @@ func NewMetadata(name string) *Metadata {
 	}
 }
 
-// SetName set name of metadata
-func (m *Metadata) SetName(name string) *Metadata {
-	m.Name = name
-	return m
-}
-
 // SetNamespace set namespace of metadata
 func (m *Metadata) SetNamespace(namespace string) *Metadata {
 	m.Namespace = namespace

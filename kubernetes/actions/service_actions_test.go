@@ -22,14 +22,13 @@ func initServices() *actions.Service {
 	}
 	objects := []runtime.Object{}
 	for name, namespace := range info {
-		service := builders.NewServiceBuilder()
+		service := builders.NewServiceBuilder(name)
 		ports := builders.Ports{
 			Protocol:   "TCP",
 			Port:       80,
 			TargetPort: intstr.FromInt(8080),
 		}
-		buildedService, _ := service.SetName(name).
-			SetNamespace(namespace).
+		buildedService, _ := service.SetNamespace(namespace).
 			SetSelector(map[string]string{"service": name}).
 			AddPorts(ports.Build()).
 			Build()
@@ -64,14 +63,13 @@ func TestUpdateService(t *testing.T) {
 
 func TestCreateService(t *testing.T) {
 	actions := initServices()
-	service := builders.NewServiceBuilder()
+	service := builders.NewServiceBuilder("service5")
 	ports := builders.Ports{
 		Protocol:   "TCP",
 		Port:       80,
 		TargetPort: intstr.FromInt(8080),
 	}
-	buildedService, _ := service.SetName("service5").
-		SetNamespace("default").
+	buildedService, _ := service.SetNamespace("default").
 		SetSelector(map[string]string{"service": "service5"}).
 		AddPorts(ports.Build()).
 		Build()
@@ -84,14 +82,13 @@ func TestCreateService(t *testing.T) {
 
 func TestCreateServiceFailed(t *testing.T) {
 	actions := initServices()
-	service := builders.NewServiceBuilder()
+	service := builders.NewServiceBuilder("service5")
 	ports := builders.Ports{
 		Protocol:   "TCP",
 		Port:       80,
 		TargetPort: intstr.FromInt(8080),
 	}
-	buildedService, _ := service.SetName("service5").
-		SetNamespace("beta").
+	buildedService, _ := service.SetNamespace("beta").
 		SetSelector(map[string]string{"service": "service5"}).
 		AddPorts(ports.Build()).
 		Build()

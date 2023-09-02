@@ -21,14 +21,13 @@ func initPod() *actions.Pod {
 	}
 	objects := []runtime.Object{}
 	for name, image := range info {
-		pod := builders.NewPodBuilder()
+		pod := builders.NewPodBuilder(name)
 		container := builders.NewContainerBuilder()
 		container.SetName("testContainer").
 			SetImage(image).
 			SetTag("1").
 			SetPort(80)
-		buildedPod := pod.SetName(name).
-			SetNamespace("default").
+		buildedPod := pod.SetNamespace("default").
 			SetLabels(map[string]string{"test": "testing"}).
 			SetAnnotations(map[string]string{"annotation": "testAnnotation"}).
 			AddContainer(*container.Build()).
@@ -52,14 +51,13 @@ func TestGetPod(t *testing.T) {
 
 func TestCreatePod(t *testing.T) {
 	actions := initPod()
-	pod := builders.NewPodBuilder()
+	pod := builders.NewPodBuilder("service5")
 	container := builders.NewContainerBuilder()
 	container.SetName("testContainer").
 		SetImage("java").
 		SetTag("3").
 		SetPort(80)
-	buildedPod := pod.SetName("service5").
-		SetNamespace("default").
+	buildedPod := pod.SetNamespace("default").
 		SetLabels(map[string]string{"test": "testing"}).
 		SetAnnotations(map[string]string{"annotation": "testAnnotation"}).
 		AddContainer(*container.Build()).

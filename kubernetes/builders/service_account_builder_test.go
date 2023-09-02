@@ -9,9 +9,8 @@ import (
 )
 
 func initServiceAccount() *builders.ServiceAccount {
-	serviceAccount := builders.NewServiceAccountBuilder()
-	serviceAccount.SetName("my-service-account").
-		SetLabels(map[string]string{"label": "my-label"}).
+	serviceAccount := builders.NewServiceAccountBuilder("my-service-account")
+	serviceAccount.SetLabels(map[string]string{"label": "my-label"}).
 		SetAnnotations(map[string]string{"annotation": "my-annotation"})
 	return serviceAccount
 }

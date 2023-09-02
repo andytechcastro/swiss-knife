@@ -21,16 +21,10 @@ type ConfigMap struct {
 
 // NewConfigMapBuilder return a ConfigMap
 // Immutable is false for default
-func NewConfigMapBuilder() *ConfigMap {
+func NewConfigMapBuilder(name string) *ConfigMap {
 	return &ConfigMap{
-		Immutable: false,
+		Name: name,
 	}
-}
-
-// SetName set the configmap name
-func (c *ConfigMap) SetName(name string) *ConfigMap {
-	c.Name = name
-	return c
 }
 
 // SetNamespace set the configmap namespace

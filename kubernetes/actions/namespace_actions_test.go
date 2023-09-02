@@ -51,8 +51,7 @@ func TestGetNamespace(t *testing.T) {
 
 func TestCreateNamespace(t *testing.T) {
 	actions := initNamespaces()
-	builder := builders.NewNamespaceBuilder()
-	builder.SetName("andres")
+	builder := builders.NewNamespaceBuilder("andres")
 	actions.Create(builder.Build())
 	namespacesList, _ := actions.List()
 	assert.Equal(t, 5, len(namespacesList.Items))

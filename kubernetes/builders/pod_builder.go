@@ -20,14 +20,10 @@ type Pod struct {
 }
 
 // NewPodBuilder return a pod struct
-func NewPodBuilder() *Pod {
-	return &Pod{}
-}
-
-// SetName Set name for deployment
-func (p *Pod) SetName(name string) *Pod {
-	p.Name = name
-	return p
+func NewPodBuilder(name string) *Pod {
+	return &Pod{
+		Name: name,
+	}
 }
 
 // SetNamespace Set namespace for deployment

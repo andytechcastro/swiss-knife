@@ -17,14 +17,10 @@ type Namespace struct {
 }
 
 // NewNamespaceBuilder return a namespace builder
-func NewNamespaceBuilder() *Namespace {
-	return &Namespace{}
-}
-
-// SetName set name of a namespace
-func (n *Namespace) SetName(name string) *Namespace {
-	n.Name = name
-	return n
+func NewNamespaceBuilder(name string) *Namespace {
+	return &Namespace{
+		Name: name,
+	}
 }
 
 // SetLabels set labels of a namespace

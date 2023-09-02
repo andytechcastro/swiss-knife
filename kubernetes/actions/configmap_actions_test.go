@@ -21,9 +21,8 @@ func initConfigMaps() *actions.ConfigMap {
 	}
 	objects := []runtime.Object{}
 	for name, namespace := range info {
-		cm := builders.NewConfigMapBuilder()
-		cms := cm.SetName(name).
-			SetNamespace(namespace).
+		cm := builders.NewConfigMapBuilder(name)
+		cms := cm.SetNamespace(namespace).
 			SetData(map[string]string{
 				"myKey": name,
 			}).Build()
@@ -48,9 +47,8 @@ func TestGetConfigMap(t *testing.T) {
 
 func TestCreateConfigMap(t *testing.T) {
 	actions := initConfigMaps()
-	configMap := builders.NewConfigMapBuilder()
-	buildedConfigMap := configMap.SetName("configmap5").
-		SetNamespace("default").
+	configMap := builders.NewConfigMapBuilder("configmap5")
+	buildedConfigMap := configMap.SetNamespace("default").
 		SetData(map[string]string{
 			"myKey": "newConfigMap",
 		}).

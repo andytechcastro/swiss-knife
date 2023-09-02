@@ -14,11 +14,10 @@ func initReplicaSet() *builders.ReplicaSet {
 		SetImage("nginx").
 		SetTag("1").
 		SetPort(80)
-	pod := builders.NewPodBuilder()
+	pod := builders.NewPodBuilder("test")
 	pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
-	replicaSet := builders.NewReplicaSetBuilder()
+	replicaSet := builders.NewReplicaSetBuilder("test")
 	replicaSet.SetPodTemplate(*pod.BuildTemplate()).
-		SetName("test").
 		SetNamespace("testNamespace").
 		SetReplicas(3).
 		SetLabels(map[string]string{"test": "testing"}).

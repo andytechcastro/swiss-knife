@@ -22,14 +22,10 @@ type Deployment struct {
 }
 
 // NewDeploymentBuilder return a deployment structr
-func NewDeploymentBuilder() *Deployment {
-	return &Deployment{}
-}
-
-// SetName Set name for deployment
-func (d *Deployment) SetName(name string) *Deployment {
-	d.Name = name
-	return d
+func NewDeploymentBuilder(name string) *Deployment {
+	return &Deployment{
+		Name: name,
+	}
 }
 
 // SetNamespace Set namespace for deployment
