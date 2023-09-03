@@ -5,6 +5,8 @@ import "errors"
 var (
 	errorDeploymentEmpty     = errors.New("The deployment is empty. Exec a build or a Get")
 	errorReplicaSetEmpty     = errors.New("The replicaset is empty. Exec a build or a Get")
+	errorJobEmpty            = errors.New("The job is empty. Exec a build or a Get")
+	errorCronJobEmpty        = errors.New("The cronjob is empty. Exec a build or a Get")
 	errorResourceEmpty       = errors.New("The resource is empty. Exec a build or a Get")
 	errorPodEmpty            = errors.New("The pod is empty. Exec a build or a Get")
 	errorServiceEmpty        = errors.New("The service is empty. Exec a build or a Get")

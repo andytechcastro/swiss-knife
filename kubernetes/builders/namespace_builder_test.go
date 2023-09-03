@@ -18,7 +18,7 @@ func initNamespace() *builders.Namespace {
 func TestBuildNamespace(t *testing.T) {
 	namespace := initNamespace()
 	buildedNamespace := namespace.Build()
-	assert.Equal(t, buildedNamespace.Name, "default")
+	assert.Equal(t, "default", buildedNamespace.Name)
 }
 
 func TestNamespaceToYaml(t *testing.T) {
@@ -42,5 +42,5 @@ func TestNamespaceToYaml(t *testing.T) {
 		},
 	)
 	yamlResult, _ := yaml.Marshal(interfaceResult)
-	assert.YAMLEq(t, string(yamlNS), string(yamlResult))
+	assert.YAMLEq(t, string(yamlResult), string(yamlNS))
 }

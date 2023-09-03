@@ -29,14 +29,14 @@ func initDeployment() *builders.Deployment {
 func TestBuildDeployment(t *testing.T) {
 	deployment := initDeployment()
 	buildedDeployment := deployment.Build()
-	assert.Equal(t, buildedDeployment.Name, "test")
-	assert.Equal(t, buildedDeployment.Namespace, "testNamespace")
-	assert.Equal(t, buildedDeployment.Labels, map[string]string{"test": "testing"})
-	assert.Equal(t, buildedDeployment.Annotations, map[string]string{"annotation": "testAnnotation"})
-	assert.Equal(t, *buildedDeployment.Spec.Replicas, int32(3))
-	assert.Equal(t, buildedDeployment.Spec.Template.Spec.Containers[0].Name, "testContainer")
-	assert.Equal(t, buildedDeployment.Spec.Template.Spec.Containers[0].Image, "nginx:1")
-	assert.Equal(t, buildedDeployment.Spec.Template.Spec.Containers[0].Ports[0].ContainerPort, int32(80))
+	assert.Equal(t, "test", buildedDeployment.Name)
+	assert.Equal(t, "testNamespace", buildedDeployment.Namespace)
+	assert.Equal(t, map[string]string{"test": "testing"}, buildedDeployment.Labels)
+	assert.Equal(t, map[string]string{"annotation": "testAnnotation"}, buildedDeployment.Annotations)
+	assert.Equal(t, int32(3), *buildedDeployment.Spec.Replicas)
+	assert.Equal(t, "testContainer", buildedDeployment.Spec.Template.Spec.Containers[0].Name)
+	assert.Equal(t, "nginx:1", buildedDeployment.Spec.Template.Spec.Containers[0].Image)
+	assert.Equal(t, int32(80), buildedDeployment.Spec.Template.Spec.Containers[0].Ports[0].ContainerPort)
 }
 
 func TestDeploymentToYaml(t *testing.T) {
@@ -93,5 +93,5 @@ func TestDeploymentToYaml(t *testing.T) {
 		},
 	)
 	yamlResult, _ := yaml.Marshal(interfaceResult)
-	assert.YAMLEq(t, string(yamlDeploy), string(yamlResult))
+	assert.YAMLEq(t, string(yamlResult), string(yamlDeploy))
 }

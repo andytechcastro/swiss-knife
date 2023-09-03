@@ -8,7 +8,7 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-func initReplicaSet() *builders.ReplicaSet {
+func initJob() *builders.Job {
 	container := builders.NewContainerBuilder()
 	container.SetName("testContainer").
 		SetImage("nginx").
@@ -16,33 +16,35 @@ func initReplicaSet() *builders.ReplicaSet {
 		SetPort(80)
 	pod := builders.NewPodBuilder("test")
 	pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
-	replicaSet := builders.NewReplicaSetBuilder("test")
-	replicaSet.SetPodTemplate(*pod.BuildTemplate()).
+	job := builders.NewJobBuilder("test")
+	job.SetPodTemplate(*pod.BuildTemplate()).
 		SetNamespace("testNamespace").
-		SetReplicas(3).
 		SetLabels(map[string]string{"test": "testing"}).
 		SetAnnotations(map[string]string{"annotation": "testAnnotation"}).
-		SetMatchLabels(map[string]string{"test": "testingmatch"})
-	return replicaSet
+		SetMatchLabels(map[string]string{"test": "testingmatch"}).
+		SetBackOffLimit(10).
+		SetTTLSecondsAfterFinished(200)
+	return job
 }
 
-func TestBuildReplicaSet(t *testing.T) {
-	replicaSet := initReplicaSet()
-	buildedReplicaSet := replicaSet.Build()
-	assert.Equal(t, "test", buildedReplicaSet.Name)
-	assert.Equal(t, "testNamespace", buildedReplicaSet.Namespace)
-	assert.Equal(t, map[string]string{"test": "testing"}, buildedReplicaSet.Labels)
-	assert.Equal(t, map[string]string{"annotation": "testAnnotation"}, buildedReplicaSet.Annotations)
-	assert.Equal(t, int32(3), *buildedReplicaSet.Spec.Replicas)
-	assert.Equal(t, "testContainer", buildedReplicaSet.Spec.Template.Spec.Containers[0].Name)
-	assert.Equal(t, "nginx:1", buildedReplicaSet.Spec.Template.Spec.Containers[0].Image)
-	assert.Equal(t, int32(80), buildedReplicaSet.Spec.Template.Spec.Containers[0].Ports[0].ContainerPort)
+func TestBuildJob(t *testing.T) {
+	job := initJob()
+	buildedJob := job.Build()
+	assert.Equal(t, "test", buildedJob.Name)
+	assert.Equal(t, "testNamespace", buildedJob.Namespace)
+	assert.Equal(t, map[string]string{"test": "testing"}, buildedJob.Labels)
+	assert.Equal(t, map[string]string{"annotation": "testAnnotation"}, buildedJob.Annotations)
+	assert.Equal(t, int32(10), *buildedJob.Spec.BackoffLimit)
+	assert.Equal(t, int32(200), *buildedJob.Spec.TTLSecondsAfterFinished)
+	assert.Equal(t, "testContainer", buildedJob.Spec.Template.Spec.Containers[0].Name)
+	assert.Equal(t, "nginx:1", buildedJob.Spec.Template.Spec.Containers[0].Image)
+	assert.Equal(t, int32(80), buildedJob.Spec.Template.Spec.Containers[0].Ports[0].ContainerPort)
 }
 
-func TestReplicaSetToYaml(t *testing.T) {
-	replicaSet := initReplicaSet()
-	replicaSet.Build()
-	yamlReplicaSet := replicaSet.ToYaml()
+func TestJobToYaml(t *testing.T) {
+	job := initJob()
+	job.Build()
+	yamlJob := job.ToYaml()
 	interfaceResult := map[string]interface{}(
 		map[string]interface{}{
 			"metadata": map[string]interface{}{
@@ -57,7 +59,8 @@ func TestReplicaSetToYaml(t *testing.T) {
 				"namespace": "testNamespace",
 			},
 			"spec": map[string]interface{}{
-				"replicas": 3,
+				"backoffLimit":            10,
+				"ttlSecondsAfterFinished": 200,
 				"selector": map[string]interface{}{
 					"matchLabels": map[string]interface{}{
 						"test": "testingmatch",
@@ -88,11 +91,9 @@ func TestReplicaSetToYaml(t *testing.T) {
 					},
 				},
 			},
-			"status": map[string]interface{}{
-				"replicas": 0,
-			},
+			"status": map[string]interface{}{},
 		},
 	)
 	yamlResult, _ := yaml.Marshal(interfaceResult)
-	assert.YAMLEq(t, string(yamlResult), string(yamlReplicaSet))
+	assert.YAMLEq(t, string(yamlResult), string(yamlJob))
 }

@@ -19,6 +19,8 @@ type Actions struct {
 	Custom         *Custom
 	ConfigMap      *ConfigMap
 	Secret         *Secret
+	Job            *Job
+	CronJob        *CronJob
 }
 
 // NewActions get an actions interface
@@ -38,6 +40,7 @@ func NewActions(config *rest.Config) (*Actions, error) {
 func GetActionFilled(clientSet kubernetes.Interface, dynamicClient dynamic.Interface, config *rest.Config) *Actions {
 	coreV1Client := clientSet.CoreV1()
 	appsV1Client := clientSet.AppsV1()
+	batchV1Client := clientSet.BatchV1()
 	return &Actions{
 		client:         clientSet,
 		config:         config,
@@ -50,5 +53,7 @@ func GetActionFilled(clientSet kubernetes.Interface, dynamicClient dynamic.Inter
 		Custom:         NewCustomActions(dynamicClient),
 		ConfigMap:      NewConfigMapAction(coreV1Client),
 		Secret:         NewSecretAction(coreV1Client),
+		Job:            NewJobAction(batchV1Client),
+		CronJob:        NewCronJobAction(batchV1Client),
 	}
 }
