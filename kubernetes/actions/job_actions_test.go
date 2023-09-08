@@ -5,6 +5,8 @@ import (
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
 	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	batchv1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/batch/v1"
+	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
 	dynamicFake "k8s.io/client-go/dynamic/fake"
@@ -21,13 +23,13 @@ func initJob() *actions.Job {
 	}
 	objects := []runtime.Object{}
 	for name, image := range info {
-		job := builders.NewJobBuilder(name)
+		job := batchv1.NewJobBuilder(name)
 		container := builders.NewContainerBuilder()
 		container.SetName("testContainer").
 			SetImage(image).
 			SetTag("1").
 			SetPort(80)
-		pod := builders.NewPodBuilder(name)
+		pod := corev1.NewPodBuilder(name)
 		pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
 		buildedJob := job.SetNamespace("default").
 			SetLabels(map[string]string{"test": "testing"}).
@@ -54,13 +56,13 @@ func TestGetJob(t *testing.T) {
 
 func TestCreateJob(t *testing.T) {
 	actions := initJob()
-	job := builders.NewJobBuilder("job5")
+	job := batchv1.NewJobBuilder("job5")
 	container := builders.NewContainerBuilder()
 	container.SetName("testContainer").
 		SetImage("java").
 		SetTag("3").
 		SetPort(80)
-	pod := builders.NewPodBuilder("job5")
+	pod := corev1.NewPodBuilder("job5")
 	pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
 	buildedJob := job.SetNamespace("default").
 		SetLabels(map[string]string{"test": "testing"}).

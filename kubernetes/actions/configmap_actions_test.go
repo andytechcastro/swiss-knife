@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
-	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
 	dynamicFake "k8s.io/client-go/dynamic/fake"
@@ -21,7 +21,7 @@ func initConfigMaps() *actions.ConfigMap {
 	}
 	objects := []runtime.Object{}
 	for name, namespace := range info {
-		cm := builders.NewConfigMapBuilder(name)
+		cm := corev1.NewConfigMapBuilder(name)
 		cms := cm.SetNamespace(namespace).
 			SetData(map[string]string{
 				"myKey": name,
@@ -47,7 +47,7 @@ func TestGetConfigMap(t *testing.T) {
 
 func TestCreateConfigMap(t *testing.T) {
 	actions := initConfigMaps()
-	configMap := builders.NewConfigMapBuilder("configmap5")
+	configMap := corev1.NewConfigMapBuilder("configmap5")
 	buildedConfigMap := configMap.SetNamespace("default").
 		SetData(map[string]string{
 			"myKey": "newConfigMap",

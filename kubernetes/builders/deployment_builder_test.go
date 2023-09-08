@@ -4,19 +4,21 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	appsv1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/apps/v1"
+	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"sigs.k8s.io/yaml"
 )
 
-func initDeployment() *builders.Deployment {
+func initDeployment() *appsv1.Deployment {
 	container := builders.NewContainerBuilder()
 	container.SetName("testContainer").
 		SetImage("nginx").
 		SetTag("1").
 		SetPort(80)
-	pod := builders.NewPodBuilder("test")
+	pod := corev1.NewPodBuilder("test")
 	pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
-	deployment := builders.NewDeploymentBuilder("test")
+	deployment := appsv1.NewDeploymentBuilder("test")
 	deployment.SetPodTemplate(*pod.BuildTemplate()).
 		SetNamespace("testNamespace").
 		SetReplicas(3).

@@ -4,17 +4,18 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"sigs.k8s.io/yaml"
 )
 
-func initPod() *builders.Pod {
+func initPod() *corev1.Pod {
 	container := builders.NewContainerBuilder()
 	container.SetName("testContainer").
 		SetImage("nginx").
 		SetTag("1").
 		SetPort(80)
-	pod := builders.NewPodBuilder("test")
+	pod := corev1.NewPodBuilder("test")
 	pod.AddContainer(*container.Build()).
 		SetNamespace("testNamespace").
 		SetLabels(map[string]string{"test": "testing"}).

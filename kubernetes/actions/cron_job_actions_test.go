@@ -5,6 +5,8 @@ import (
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
 	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	batchv1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/batch/v1"
+	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
 	dynamicFake "k8s.io/client-go/dynamic/fake"
@@ -21,15 +23,15 @@ func initCronJob() *actions.CronJob {
 	}
 	objects := []runtime.Object{}
 	for name, image := range info {
-		cronJob := builders.NewCronJobBuilder(name)
+		cronJob := batchv1.NewCronJobBuilder(name)
 		container := builders.NewContainerBuilder()
 		container.SetName("testContainer").
 			SetImage(image).
 			SetTag("1").
 			SetPort(80)
-		pod := builders.NewPodBuilder(name)
+		pod := corev1.NewPodBuilder(name)
 		pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
-		job := builders.NewJobBuilder("test")
+		job := batchv1.NewJobBuilder("test")
 		job.SetPodTemplate(*pod.BuildTemplate()).
 			SetMatchLabels(map[string]string{"test": "testingmatch"}).
 			SetBackOffLimit(10).
@@ -58,15 +60,15 @@ func TestGetCronJob(t *testing.T) {
 
 func TestCreateCronJob(t *testing.T) {
 	actions := initCronJob()
-	cronJob := builders.NewCronJobBuilder("cronJob5")
+	cronJob := batchv1.NewCronJobBuilder("cronJob5")
 	container := builders.NewContainerBuilder()
 	container.SetName("testContainer").
 		SetImage("java").
 		SetTag("3").
 		SetPort(80)
-	pod := builders.NewPodBuilder("cronJob5")
+	pod := corev1.NewPodBuilder("cronJob5")
 	pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
-	job := builders.NewJobBuilder("test")
+	job := batchv1.NewJobBuilder("test")
 	job.SetPodTemplate(*pod.BuildTemplate()).
 		SetMatchLabels(map[string]string{"test": "testingmatch"}).
 		SetBackOffLimit(10).

@@ -4,24 +4,26 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	batchv1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/batch/v1"
+	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"sigs.k8s.io/yaml"
 )
 
-func initCronJob() *builders.CronJob {
+func initCronJob() *batchv1.CronJob {
 	container := builders.NewContainerBuilder()
 	container.SetName("testContainer").
 		SetImage("nginx").
 		SetTag("1").
 		SetPort(80)
-	pod := builders.NewPodBuilder("test")
+	pod := corev1.NewPodBuilder("test")
 	pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
-	job := builders.NewJobBuilder("test")
+	job := batchv1.NewJobBuilder("test")
 	job.SetPodTemplate(*pod.BuildTemplate()).
 		SetMatchLabels(map[string]string{"test": "testingmatch"}).
 		SetBackOffLimit(10).
 		SetTTLSecondsAfterFinished(200)
-	cronJob := builders.NewCronJobBuilder("test")
+	cronJob := batchv1.NewCronJobBuilder("test")
 	cronJob.SetJobTemplate(*job.BuildTemplate()).
 		SetNamespace("testNamespace").
 		SetLabels(map[string]string{"test": "testing"}).

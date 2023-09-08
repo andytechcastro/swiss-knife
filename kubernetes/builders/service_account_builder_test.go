@@ -3,13 +3,13 @@ package builders_test
 import (
 	"testing"
 
-	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"sigs.k8s.io/yaml"
 )
 
-func initServiceAccount() *builders.ServiceAccount {
-	serviceAccount := builders.NewServiceAccountBuilder("my-service-account")
+func initServiceAccount() *corev1.ServiceAccount {
+	serviceAccount := corev1.NewServiceAccountBuilder("my-service-account")
 	serviceAccount.SetLabels(map[string]string{"label": "my-label"}).
 		SetAnnotations(map[string]string{"annotation": "my-annotation"})
 	return serviceAccount

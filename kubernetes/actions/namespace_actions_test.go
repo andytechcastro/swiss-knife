@@ -4,10 +4,8 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
-	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	dynamicFake "k8s.io/client-go/dynamic/fake"
 	"k8s.io/client-go/kubernetes/fake"
@@ -16,29 +14,21 @@ import (
 )
 
 func initNamespaces() *actions.Namespace {
-	client := fake.NewSimpleClientset(&corev1.Namespace{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        "default",
-			Annotations: map[string]string{},
-		},
-	}, &corev1.Namespace{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        "beta",
-			Annotations: map[string]string{},
-		},
-	}, &corev1.Namespace{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        "tools",
-			Annotations: map[string]string{},
-		},
-	}, &corev1.Namespace{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        "istio-system",
-			Annotations: map[string]string{},
-		},
-	})
+	info := map[string]string{
+		"1": "default",
+		"2": "beta",
+		"3": "tools",
+		"4": "istio-system",
+	}
 	objects := []runtime.Object{}
-	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objects...)
+	objectsDynamic := []runtime.Object{}
+	for _, name := range info {
+		namespace := corev1.NewNamespaceBuilder(name)
+		buildedNamespace := namespace.SetAnnotations(map[string]string{}).Build()
+		objects = append(objects, buildedNamespace)
+	}
+	client := fake.NewSimpleClientset(objects...)
+	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
 	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).Namespace
 	return actions
 }
@@ -51,7 +41,7 @@ func TestGetNamespace(t *testing.T) {
 
 func TestCreateNamespace(t *testing.T) {
 	actions := initNamespaces()
-	builder := builders.NewNamespaceBuilder("andres")
+	builder := corev1.NewNamespaceBuilder("andres")
 	actions.Create(builder.Build())
 	namespacesList, _ := actions.List()
 	assert.Equal(t, 5, len(namespacesList.Items))

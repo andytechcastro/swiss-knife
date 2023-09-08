@@ -4,14 +4,14 @@ import (
 	"encoding/base64"
 	"testing"
 
-	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 
 	"sigs.k8s.io/yaml"
 )
 
-func initSecret() *builders.Secret {
-	secret := builders.NewSecretBuilder("my-secret")
+func initSecret() *corev1.Secret {
+	secret := corev1.NewSecretBuilder("my-secret")
 	secret.SetNamespace("default")
 	return secret
 }

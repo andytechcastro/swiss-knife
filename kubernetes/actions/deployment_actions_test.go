@@ -5,6 +5,8 @@ import (
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
 	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	appsv1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/apps/v1"
+	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
 	dynamicFake "k8s.io/client-go/dynamic/fake"
@@ -21,13 +23,13 @@ func initDeployment() *actions.Deployment {
 	}
 	objects := []runtime.Object{}
 	for name, image := range info {
-		deployment := builders.NewDeploymentBuilder(name)
+		deployment := appsv1.NewDeploymentBuilder(name)
 		container := builders.NewContainerBuilder()
 		container.SetName("testContainer").
 			SetImage(image).
 			SetTag("1").
 			SetPort(80)
-		pod := builders.NewPodBuilder(name)
+		pod := corev1.NewPodBuilder(name)
 		pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
 		buildedDeployment := deployment.SetNamespace("default").
 			SetLabels(map[string]string{"test": "testing"}).
@@ -55,13 +57,13 @@ func TestGetDeployment(t *testing.T) {
 
 func TestCreateDeployment(t *testing.T) {
 	actions := initDeployment()
-	deployment := builders.NewDeploymentBuilder("service5")
+	deployment := appsv1.NewDeploymentBuilder("service5")
 	container := builders.NewContainerBuilder()
 	container.SetName("testContainer").
 		SetImage("java").
 		SetTag("3").
 		SetPort(80)
-	pod := builders.NewPodBuilder("service5")
+	pod := corev1.NewPodBuilder("service5")
 	pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
 	buildedDeployment := deployment.SetNamespace("default").
 		SetLabels(map[string]string{"test": "testing"}).

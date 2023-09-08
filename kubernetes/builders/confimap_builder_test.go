@@ -3,13 +3,13 @@ package builders_test
 import (
 	"testing"
 
-	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"sigs.k8s.io/yaml"
 )
 
-func initConfigMap() *builders.ConfigMap {
-	configmap := builders.NewConfigMapBuilder("configmap")
+func initConfigMap() *corev1.ConfigMap {
+	configmap := corev1.NewConfigMapBuilder("configmap")
 	configmap.SetNamespace("default").
 		SetData(map[string]string{
 			"myKey": "myValue",

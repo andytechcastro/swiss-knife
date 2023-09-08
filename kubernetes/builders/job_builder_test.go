@@ -4,19 +4,21 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	batchv1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/batch/v1"
+	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"sigs.k8s.io/yaml"
 )
 
-func initJob() *builders.Job {
+func initJob() *batchv1.Job {
 	container := builders.NewContainerBuilder()
 	container.SetName("testContainer").
 		SetImage("nginx").
 		SetTag("1").
 		SetPort(80)
-	pod := builders.NewPodBuilder("test")
+	pod := corev1.NewPodBuilder("test")
 	pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
-	job := builders.NewJobBuilder("test")
+	job := batchv1.NewJobBuilder("test")
 	job.SetPodTemplate(*pod.BuildTemplate()).
 		SetNamespace("testNamespace").
 		SetLabels(map[string]string{"test": "testing"}).

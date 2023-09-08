@@ -5,6 +5,8 @@ import (
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
 	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	appsv1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/apps/v1"
+	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
 	dynamicFake "k8s.io/client-go/dynamic/fake"
@@ -21,13 +23,13 @@ func initReplicaSet() *actions.ReplicaSet {
 	}
 	objects := []runtime.Object{}
 	for name, image := range info {
-		replicaSet := builders.NewReplicaSetBuilder(name)
+		replicaSet := appsv1.NewReplicaSetBuilder(name)
 		container := builders.NewContainerBuilder()
 		container.SetName("testContainer").
 			SetImage(image).
 			SetTag("1").
 			SetPort(80)
-		pod := builders.NewPodBuilder(name)
+		pod := corev1.NewPodBuilder(name)
 		pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
 		buildedReplicaSet := replicaSet.SetNamespace("default").
 			SetLabels(map[string]string{"test": "testing"}).
@@ -55,13 +57,13 @@ func TestGetReplicaSet(t *testing.T) {
 
 func TestCreateReplicaSet(t *testing.T) {
 	actions := initReplicaSet()
-	replicaSet := builders.NewReplicaSetBuilder("replicaset5")
+	replicaSet := appsv1.NewReplicaSetBuilder("replicaset5")
 	container := builders.NewContainerBuilder()
 	container.SetName("testContainer").
 		SetImage("java").
 		SetTag("3").
 		SetPort(80)
-	pod := builders.NewPodBuilder("replicaset5")
+	pod := corev1.NewPodBuilder("replicaset5")
 	pod.SetLabels(map[string]string{"test": "testingmatch"}).AddContainer(*container.Build())
 	buildedReplicaSet := replicaSet.SetNamespace("default").
 		SetLabels(map[string]string{"test": "testing"}).

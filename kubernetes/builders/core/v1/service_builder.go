@@ -3,8 +3,10 @@ package builders
 import (
 	"fmt"
 
+	"github.com/andytechcastro/swiss-knife/errors"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"sigs.k8s.io/yaml"
 )
 
@@ -117,13 +119,13 @@ func (s *Service) ToYaml() []byte {
 func (s *Service) Validate() error {
 	if s.Type == corev1.ServiceTypeClusterIP || s.Type == corev1.ServiceTypeNodePort {
 		if s.Selector == nil {
-			return errorSelectorEmpty
+			return errors.GetEmptyError("Selector")
 		} else if s.Ports == nil {
-			return errorPortsEmpty
+			return errors.GetEmptyError("Port")
 		}
 	} else if s.Type == corev1.ServiceTypeExternalName {
 		if s.ExternalName == "" {
-			return errorExternalNameEmpty
+			return errors.GetEmptyError("ExternalName")
 		}
 	}
 	return nil

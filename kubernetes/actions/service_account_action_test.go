@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
-	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
 	dynamicFake "k8s.io/client-go/dynamic/fake"
@@ -21,7 +21,7 @@ func initServiceAccounts() *actions.ServiceAccount {
 	}
 	objects := []runtime.Object{}
 	for name, namespace := range info {
-		sa := builders.NewServiceAccountBuilder(name)
+		sa := corev1.NewServiceAccountBuilder(name)
 		sas := sa.SetNamespace(namespace).Build()
 		objects = append(objects, sas)
 	}
@@ -43,7 +43,7 @@ func TestGetServiceAccounts(t *testing.T) {
 
 func TestCreateServiceAccount(t *testing.T) {
 	actions := initServiceAccounts()
-	serviceAccount := builders.NewServiceAccountBuilder("service5")
+	serviceAccount := corev1.NewServiceAccountBuilder("service5")
 	buildedServiceAccount := serviceAccount.SetNamespace("default").
 		SetLabels(map[string]string{"label": "my-label"}).
 		SetAnnotations(map[string]string{"annotation": "my-annotation"}).

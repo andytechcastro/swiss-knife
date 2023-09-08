@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	builderCorev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -12,8 +13,8 @@ import (
 
 const ServiceName = "my-service"
 
-func initService() *builders.Service {
-	service := builders.NewServiceBuilder(ServiceName)
+func initService() *builderCorev1.Service {
+	service := builderCorev1.NewServiceBuilder(ServiceName)
 	return service
 }
 

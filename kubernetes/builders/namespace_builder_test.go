@@ -3,13 +3,13 @@ package builders_test
 import (
 	"testing"
 
-	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"sigs.k8s.io/yaml"
 )
 
-func initNamespace() *builders.Namespace {
-	namespace := builders.NewNamespaceBuilder("default")
+func initNamespace() *corev1.Namespace {
+	namespace := corev1.NewNamespaceBuilder("default")
 	namespace.SetAnnotations(map[string]string{"my-first": "annotation"}).
 		SetLabels(map[string]string{"my-first": "label"})
 	return namespace

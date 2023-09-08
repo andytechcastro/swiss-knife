@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
-	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
+	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
 	dynamicFake "k8s.io/client-go/dynamic/fake"
@@ -21,7 +21,7 @@ func initSecret() *actions.Secret {
 	}
 	objects := []runtime.Object{}
 	for name, secretValue := range info {
-		secret := builders.NewSecretBuilder(name)
+		secret := corev1.NewSecretBuilder(name)
 		buildedSecret := secret.SetNamespace("default").
 			SetType("kubernetes.io/basic-auth").
 			SetStringData(map[string]string{
@@ -48,7 +48,7 @@ func TestGetSecret(t *testing.T) {
 
 func TestCreateSecret(t *testing.T) {
 	actions := initSecret()
-	secret := builders.NewSecretBuilder("secret5")
+	secret := corev1.NewSecretBuilder("secret5")
 	buildedSecret := secret.SetNamespace("default").
 		SetType("kubernetes.io/basic-auth").
 		SetStringData(map[string]string{
