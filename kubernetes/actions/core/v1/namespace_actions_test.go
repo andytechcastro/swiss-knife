@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
+	actionsCoreV1 "github.com/andytechcastro/swiss-knife/kubernetes/actions/core/v1"
 	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -13,7 +14,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func initNamespaces() *actions.Namespace {
+func initNamespaces() *actionsCoreV1.Namespace {
 	info := map[string]string{
 		"1": "default",
 		"2": "beta",
@@ -29,7 +30,7 @@ func initNamespaces() *actions.Namespace {
 	}
 	client := fake.NewSimpleClientset(objects...)
 	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
-	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).Namespace
+	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).CoreV1.Namespace
 	return actions
 }
 

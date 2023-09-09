@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
+	actionsCoreV1 "github.com/andytechcastro/swiss-knife/kubernetes/actions/core/v1"
 	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -12,7 +13,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func initConfigMaps() *actions.ConfigMap {
+func initConfigMaps() *actionsCoreV1.ConfigMap {
 	info := map[string]string{
 		"configmap1": "default",
 		"configmap2": "default",
@@ -32,7 +33,7 @@ func initConfigMaps() *actions.ConfigMap {
 	objectsDynamic := []runtime.Object{}
 
 	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
-	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).ConfigMap
+	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).CoreV1.ConfigMap
 	actions.Namespace("default")
 	return actions
 }

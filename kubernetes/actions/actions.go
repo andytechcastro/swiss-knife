@@ -1,6 +1,9 @@
 package actions
 
 import (
+	actionsAppsV1 "github.com/andytechcastro/swiss-knife/kubernetes/actions/apps/v1"
+	actionsBatchV1 "github.com/andytechcastro/swiss-knife/kubernetes/actions/batch/v1"
+	actionsCoreV1 "github.com/andytechcastro/swiss-knife/kubernetes/actions/core/v1"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -8,19 +11,12 @@ import (
 
 // Actions kubernetes actions
 type Actions struct {
-	client         kubernetes.Interface
-	config         *rest.Config
-	Namespace      *Namespace
-	ServiceAccount *ServiceAccount
-	Service        *Service
-	Pod            *Pod
-	Deployment     *Deployment
-	ReplicaSet     *ReplicaSet
-	Custom         *Custom
-	ConfigMap      *ConfigMap
-	Secret         *Secret
-	Job            *Job
-	CronJob        *CronJob
+	client  kubernetes.Interface
+	config  *rest.Config
+	Custom  *Custom
+	CoreV1  *actionsCoreV1.CoreV1
+	BatchV1 *actionsBatchV1.BatchV1
+	AppsV1  *actionsAppsV1.AppsV1
 }
 
 // NewActions get an actions interface
@@ -42,18 +38,11 @@ func GetActionFilled(clientSet kubernetes.Interface, dynamicClient dynamic.Inter
 	appsV1Client := clientSet.AppsV1()
 	batchV1Client := clientSet.BatchV1()
 	return &Actions{
-		client:         clientSet,
-		config:         config,
-		Namespace:      NewNamespaceAction(coreV1Client.Namespaces()),
-		Service:        NewServiceAction(coreV1Client),
-		Deployment:     NewDeploymentAction(appsV1Client),
-		ReplicaSet:     NewReplicaSetAction(appsV1Client),
-		Pod:            NewPodAction(coreV1Client),
-		ServiceAccount: NewServiceAccountAction(coreV1Client),
-		Custom:         NewCustomActions(dynamicClient),
-		ConfigMap:      NewConfigMapAction(coreV1Client),
-		Secret:         NewSecretAction(coreV1Client),
-		Job:            NewJobAction(batchV1Client),
-		CronJob:        NewCronJobAction(batchV1Client),
+		client:  clientSet,
+		config:  config,
+		Custom:  NewCustomActions(dynamicClient),
+		CoreV1:  actionsCoreV1.NewCoreV1(coreV1Client),
+		BatchV1: actionsBatchV1.NewBatchV1(batchV1Client),
+		AppsV1:  actionsAppsV1.NewAppsV1(appsV1Client),
 	}
 }

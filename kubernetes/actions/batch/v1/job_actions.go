@@ -3,6 +3,7 @@ package actions
 import (
 	"context"
 
+	"github.com/andytechcastro/swiss-knife/errors"
 	batchv1 "k8s.io/api/batch/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	appsInterface "k8s.io/client-go/kubernetes/typed/batch/v1"
@@ -31,7 +32,7 @@ func (d *Job) Namespace(namespace string) *Job {
 // Create Create a job in the client
 func (d *Job) Create(job *batchv1.Job) error {
 	if job == nil {
-		return errorJobEmpty
+		return errors.GetEmptyError("Job")
 	}
 	_, err := d.client.Jobs(d.CurrentNamespace).Create(
 		context.TODO(),
@@ -48,7 +49,7 @@ func (d *Job) Create(job *batchv1.Job) error {
 // Update Update a job in the client
 func (d *Job) Update(job *batchv1.Job) error {
 	if job == nil {
-		return errorJobEmpty
+		return errors.GetEmptyError("Job")
 	}
 	_, err := d.client.Jobs(d.CurrentNamespace).Update(
 		context.TODO(),
@@ -64,7 +65,7 @@ func (d *Job) Update(job *batchv1.Job) error {
 // Delete Delete a job in the client
 func (d *Job) Delete(jobName string) error {
 	if jobName == "" {
-		return errorNameEmpty
+		return errors.GetEmptyError("Name")
 	}
 	deletePolicy := metav1.DeletePropagationForeground
 	err := d.client.Jobs(d.CurrentNamespace).Delete(
@@ -83,7 +84,7 @@ func (d *Job) Delete(jobName string) error {
 // Get Get a job from the client
 func (d *Job) Get(jobName string) (*batchv1.Job, error) {
 	if jobName == "" {
-		return nil, errorNameEmpty
+		return nil, errors.GetEmptyError("Name")
 	}
 	job, err := d.client.Jobs(d.CurrentNamespace).Get(
 		context.TODO(),

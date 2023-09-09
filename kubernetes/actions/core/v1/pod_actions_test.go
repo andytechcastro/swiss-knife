@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
+	actionsCoreV1 "github.com/andytechcastro/swiss-knife/kubernetes/actions/core/v1"
 	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
 	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
@@ -13,7 +14,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func initPod() *actions.Pod {
+func initPod() *actionsCoreV1.Pod {
 	info := map[string]string{
 		"service1": "nginx",
 		"service2": "apache",
@@ -38,7 +39,7 @@ func initPod() *actions.Pod {
 	objectsDynamic := []runtime.Object{}
 	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
 	client := fake.NewSimpleClientset(objects...)
-	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).Pod
+	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).CoreV1.Pod
 	actions.Namespace("default")
 	return actions
 }

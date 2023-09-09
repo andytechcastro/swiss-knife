@@ -3,6 +3,7 @@ package actions
 import (
 	"context"
 
+	"github.com/andytechcastro/swiss-knife/errors"
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -29,10 +30,13 @@ func (cm *ConfigMap) Namespace(namespace string) *ConfigMap {
 }
 
 // Get get configmap
-func (cm *ConfigMap) Get(name string) (*apiv1.ConfigMap, error) {
+func (cm *ConfigMap) Get(cmName string) (*apiv1.ConfigMap, error) {
+	if cmName == "" {
+		return nil, errors.GetEmptyError("Name")
+	}
 	configmap, err := cm.client.ConfigMaps(cm.CurrentNamespace).Get(
 		context.TODO(),
-		name,
+		cmName,
 		metav1.GetOptions{},
 	)
 	if err != nil {
@@ -43,6 +47,9 @@ func (cm *ConfigMap) Get(name string) (*apiv1.ConfigMap, error) {
 
 // Create Create an ConfigMap
 func (cm *ConfigMap) Create(configMap *apiv1.ConfigMap) error {
+	if configMap == nil {
+		return errors.GetEmptyError("ConfigMap")
+	}
 	_, err := cm.client.ConfigMaps(cm.CurrentNamespace).Create(
 		context.TODO(),
 		configMap,
@@ -57,7 +64,7 @@ func (cm *ConfigMap) Create(configMap *apiv1.ConfigMap) error {
 // Update Update a pods in the client
 func (cm *ConfigMap) Update(configMap *apiv1.ConfigMap) error {
 	if configMap == nil {
-		return errorPodEmpty
+		return errors.GetEmptyError("ConfigMap")
 	}
 	_, err := cm.client.ConfigMaps(cm.CurrentNamespace).Update(
 		context.TODO(),
@@ -73,7 +80,7 @@ func (cm *ConfigMap) Update(configMap *apiv1.ConfigMap) error {
 // Delete Delete a pod in the client
 func (cm *ConfigMap) Delete(cmName string) error {
 	if cmName == "" {
-		return errorNameEmpty
+		return errors.GetEmptyError("Name")
 	}
 	deletePolicy := metav1.DeletePropagationForeground
 	err := cm.client.ConfigMaps(cm.CurrentNamespace).Delete(

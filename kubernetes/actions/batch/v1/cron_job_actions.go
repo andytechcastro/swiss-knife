@@ -3,6 +3,7 @@ package actions
 import (
 	"context"
 
+	"github.com/andytechcastro/swiss-knife/errors"
 	batchv1 "k8s.io/api/batch/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	appsInterface "k8s.io/client-go/kubernetes/typed/batch/v1"
@@ -31,7 +32,7 @@ func (c *CronJob) Namespace(namespace string) *CronJob {
 // Create Create a cronJob in the client
 func (c *CronJob) Create(cronJob *batchv1.CronJob) error {
 	if cronJob == nil {
-		return errorCronJobEmpty
+		return errors.GetEmptyError("CronJob")
 	}
 	_, err := c.client.CronJobs(c.CurrentNamespace).Create(
 		context.TODO(),
@@ -48,7 +49,7 @@ func (c *CronJob) Create(cronJob *batchv1.CronJob) error {
 // Update Update a cronJob in the client
 func (c *CronJob) Update(cronJob *batchv1.CronJob) error {
 	if cronJob == nil {
-		return errorCronJobEmpty
+		return errors.GetEmptyError("CronJob")
 	}
 	_, err := c.client.CronJobs(c.CurrentNamespace).Update(
 		context.TODO(),
@@ -64,7 +65,7 @@ func (c *CronJob) Update(cronJob *batchv1.CronJob) error {
 // Delete Delete a cronJob in the client
 func (c *CronJob) Delete(cronJobName string) error {
 	if cronJobName == "" {
-		return errorNameEmpty
+		return errors.GetEmptyError("Name")
 	}
 	deletePolicy := metav1.DeletePropagationForeground
 	err := c.client.CronJobs(c.CurrentNamespace).Delete(
@@ -83,7 +84,7 @@ func (c *CronJob) Delete(cronJobName string) error {
 // Get Get a cronJob from the client
 func (c *CronJob) Get(cronJobName string) (*batchv1.CronJob, error) {
 	if cronJobName == "" {
-		return nil, errorNameEmpty
+		return nil, errors.GetEmptyError("Name")
 	}
 	cronJob, err := c.client.CronJobs(c.CurrentNamespace).Get(
 		context.TODO(),

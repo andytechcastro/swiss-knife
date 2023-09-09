@@ -3,6 +3,7 @@ package actions
 import (
 	"context"
 
+	"github.com/andytechcastro/swiss-knife/errors"
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -23,7 +24,7 @@ func NewNamespaceAction(client corev1.NamespaceInterface) *Namespace {
 // Create Create a namespace in the client
 func (n *Namespace) Create(namespace *apiv1.Namespace) error {
 	if namespace == nil {
-		return errorNamespaceEmpty
+		return errors.GetEmptyError("Namespace")
 	}
 	_, err := n.client.Create(
 		context.TODO(),
@@ -39,7 +40,7 @@ func (n *Namespace) Create(namespace *apiv1.Namespace) error {
 // Update Update a namespace in the client
 func (n *Namespace) Update(namespace *apiv1.Namespace) error {
 	if namespace == nil {
-		return errorNamespaceEmpty
+		return errors.GetEmptyError("Namespace")
 	}
 	_, err := n.client.Update(
 		context.TODO(),
@@ -55,7 +56,7 @@ func (n *Namespace) Update(namespace *apiv1.Namespace) error {
 // Delete Delete the namespace in the client
 func (n *Namespace) Delete(namespaceName string) error {
 	if namespaceName == "" {
-		return errorNameEmpty
+		return errors.GetEmptyError("Name")
 	}
 	err := n.client.Delete(
 		context.TODO(),
@@ -72,7 +73,7 @@ func (n *Namespace) Delete(namespaceName string) error {
 // Get Get a namespace in the client
 func (n *Namespace) Get(namespaceName string) (*apiv1.Namespace, error) {
 	if namespaceName == "" {
-		return nil, errorNameEmpty
+		return nil, errors.GetEmptyError("Name")
 	}
 	ns, err := n.client.Get(
 		context.TODO(),

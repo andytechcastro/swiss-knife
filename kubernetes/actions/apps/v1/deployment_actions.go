@@ -3,6 +3,7 @@ package actions
 import (
 	"context"
 
+	"github.com/andytechcastro/swiss-knife/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	appsInterface "k8s.io/client-go/kubernetes/typed/apps/v1"
@@ -31,7 +32,7 @@ func (d *Deployment) Namespace(namespace string) *Deployment {
 // Create Create a deployment in the client
 func (d *Deployment) Create(deployment *appsv1.Deployment) error {
 	if deployment == nil {
-		return errorDeploymentEmpty
+		return errors.GetEmptyError("Deployment")
 	}
 	_, err := d.client.Deployments(d.CurrentNamespace).Create(
 		context.TODO(),
@@ -48,7 +49,7 @@ func (d *Deployment) Create(deployment *appsv1.Deployment) error {
 // Update Update a deployment in the client
 func (d *Deployment) Update(deployment *appsv1.Deployment) error {
 	if deployment == nil {
-		return errorDeploymentEmpty
+		return errors.GetEmptyError("Deployment")
 	}
 	_, err := d.client.Deployments(d.CurrentNamespace).Update(
 		context.TODO(),
@@ -64,7 +65,7 @@ func (d *Deployment) Update(deployment *appsv1.Deployment) error {
 // Delete Delete a deployment in the client
 func (d *Deployment) Delete(deploymentName string) error {
 	if deploymentName == "" {
-		return errorNameEmpty
+		return errors.GetEmptyError("Name")
 	}
 	deletePolicy := metav1.DeletePropagationForeground
 	err := d.client.Deployments(d.CurrentNamespace).Delete(
@@ -83,7 +84,7 @@ func (d *Deployment) Delete(deploymentName string) error {
 // Get Get a deployment from the client
 func (d *Deployment) Get(deploymentName string) (*appsv1.Deployment, error) {
 	if deploymentName == "" {
-		return nil, errorNameEmpty
+		return nil, errors.GetEmptyError("Name")
 	}
 	deployment, err := d.client.Deployments(d.CurrentNamespace).Get(
 		context.TODO(),

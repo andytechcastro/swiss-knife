@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
+	actionsAppsV1 "github.com/andytechcastro/swiss-knife/kubernetes/actions/apps/v1"
 	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
 	appsv1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/apps/v1"
 	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
@@ -14,7 +15,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func initDeployment() *actions.Deployment {
+func initDeployment() *actionsAppsV1.Deployment {
 	info := map[string]string{
 		"service1": "nginx",
 		"service2": "apache",
@@ -43,7 +44,7 @@ func initDeployment() *actions.Deployment {
 	client := fake.NewSimpleClientset(objects...)
 	objectsDynamic := []runtime.Object{}
 	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
-	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).Deployment
+	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).AppsV1.Deployment
 	actions.Namespace("default")
 	return actions
 }

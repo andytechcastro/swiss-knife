@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
+	actionsCoreV1 "github.com/andytechcastro/swiss-knife/kubernetes/actions/core/v1"
 	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -12,7 +13,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func initSecret() *actions.Secret {
+func initSecret() *actionsCoreV1.Secret {
 	info := map[string]string{
 		"secret1": "firstPass",
 		"secret2": "my-secret",
@@ -33,7 +34,7 @@ func initSecret() *actions.Secret {
 	objectsDynamic := []runtime.Object{}
 	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
 	client := fake.NewSimpleClientset(objects...)
-	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).Secret
+	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).CoreV1.Secret
 	actions.Namespace("default")
 	return actions
 }

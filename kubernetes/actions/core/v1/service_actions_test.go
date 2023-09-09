@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
+	actionsCoreV1 "github.com/andytechcastro/swiss-knife/kubernetes/actions/core/v1"
 	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
 	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
@@ -14,7 +15,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func initServices() *actions.Service {
+func initServices() *actionsCoreV1.Service {
 	info := map[string]string{
 		"service1": "default",
 		"service2": "default",
@@ -40,7 +41,7 @@ func initServices() *actions.Service {
 	objectsDynamic := []runtime.Object{}
 
 	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
-	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).Service
+	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).CoreV1.Service
 	actions.Namespace("default")
 	return actions
 }

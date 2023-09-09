@@ -3,6 +3,7 @@ package actions
 import (
 	"context"
 
+	"github.com/andytechcastro/swiss-knife/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -37,6 +38,9 @@ func (c *Custom) SetGroupVersionResource(resource schema.GroupVersionResource) *
 
 // Get get custom resource
 func (c *Custom) Get(name string) (*unstructured.Unstructured, error) {
+	if name == "" {
+		return nil, errors.GetEmptyError("Name")
+	}
 	custom, err := c.client.Resource(c.GroupVersionResource).Namespace(c.CurrentNamespace).Get(
 		context.TODO(),
 		name,
@@ -51,7 +55,7 @@ func (c *Custom) Get(name string) (*unstructured.Unstructured, error) {
 // Create create a custom resource
 func (c *Custom) Create(resource *unstructured.Unstructured) error {
 	if resource == nil {
-		return errorResourceEmpty
+		return errors.GetEmptyError("Resource")
 	}
 	_, err := c.client.Resource(c.GroupVersionResource).Namespace(c.CurrentNamespace).Create(
 		context.TODO(),
@@ -64,7 +68,7 @@ func (c *Custom) Create(resource *unstructured.Unstructured) error {
 // Update update a custome resource
 func (c *Custom) Update(resource *unstructured.Unstructured) error {
 	if resource == nil {
-		return errorResourceEmpty
+		return errors.GetEmptyError("Resource")
 	}
 	_, err := c.client.Resource(c.GroupVersionResource).Namespace(c.CurrentNamespace).Update(
 		context.TODO(),
@@ -77,7 +81,7 @@ func (c *Custom) Update(resource *unstructured.Unstructured) error {
 // Delete delete a custom resource
 func (c *Custom) Delete(name string) error {
 	if name == "" {
-		return errorNameEmpty
+		return errors.GetEmptyError("Name")
 	}
 	deletePolicy := metav1.DeletePropagationForeground
 	err := c.client.Resource(c.GroupVersionResource).Namespace(c.CurrentNamespace).Delete(

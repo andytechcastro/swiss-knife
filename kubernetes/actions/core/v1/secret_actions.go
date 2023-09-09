@@ -3,6 +3,7 @@ package actions
 import (
 	"context"
 
+	"github.com/andytechcastro/swiss-knife/errors"
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	coreInterface "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -31,7 +32,7 @@ func (s *Secret) Namespace(namespace string) *Secret {
 // Create Create a secrets in the client
 func (s *Secret) Create(secret *apiv1.Secret) error {
 	if secret == nil {
-		return errorPodEmpty
+		return errors.GetEmptyError("Secret")
 	}
 	_, err := s.client.Secrets(s.CurrentNamespace).Create(
 		context.TODO(),
@@ -48,7 +49,7 @@ func (s *Secret) Create(secret *apiv1.Secret) error {
 // Update Update a secrets in the client
 func (s *Secret) Update(secret *apiv1.Secret) error {
 	if secret == nil {
-		return errorPodEmpty
+		return errors.GetEmptyError("Secret")
 	}
 	_, err := s.client.Secrets(s.CurrentNamespace).Update(
 		context.TODO(),
@@ -64,7 +65,7 @@ func (s *Secret) Update(secret *apiv1.Secret) error {
 // Delete Delete a secret in the client
 func (s *Secret) Delete(secretName string) error {
 	if secretName == "" {
-		return errorNameEmpty
+		return errors.GetEmptyError("Name")
 	}
 	deletePolicy := metav1.DeletePropagationForeground
 	err := s.client.Secrets(s.CurrentNamespace).Delete(
@@ -83,7 +84,7 @@ func (s *Secret) Delete(secretName string) error {
 // Get Get a secret from the client
 func (s *Secret) Get(secretName string) (*apiv1.Secret, error) {
 	if secretName == "" {
-		return nil, errorNameEmpty
+		return nil, errors.GetEmptyError("Name")
 	}
 	secret, err := s.client.Secrets(s.CurrentNamespace).Get(
 		context.TODO(),

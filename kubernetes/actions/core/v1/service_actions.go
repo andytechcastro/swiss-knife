@@ -3,6 +3,7 @@ package actions
 import (
 	"context"
 
+	"github.com/andytechcastro/swiss-knife/errors"
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -31,7 +32,7 @@ func (s *Service) Namespace(namespace string) *Service {
 // Create create a service in the client
 func (s *Service) Create(service *apiv1.Service) error {
 	if service == nil {
-		return errorServiceEmpty
+		return errors.GetEmptyError("Service")
 	}
 	_, err := s.client.Services(s.CurrentNamespace).Create(
 		context.TODO(),
@@ -47,7 +48,7 @@ func (s *Service) Create(service *apiv1.Service) error {
 // Update a service in the client
 func (s *Service) Update(service *apiv1.Service) error {
 	if service == nil {
-		return errorServiceEmpty
+		return errors.GetEmptyError("Service")
 	}
 	_, err := s.client.Services(s.CurrentNamespace).Update(
 		context.TODO(),
@@ -63,7 +64,7 @@ func (s *Service) Update(service *apiv1.Service) error {
 // Delete Delete a service in the client
 func (s *Service) Delete(serviceName string) error {
 	if serviceName == "" {
-		return errorNameEmpty
+		return errors.GetEmptyError("Name")
 	}
 	err := s.client.Services(s.CurrentNamespace).Delete(
 		context.TODO(),
@@ -79,7 +80,7 @@ func (s *Service) Delete(serviceName string) error {
 // Get Get a service in the client
 func (s *Service) Get(serviceName string) (*apiv1.Service, error) {
 	if serviceName == "" {
-		return nil, errorNameEmpty
+		return nil, errors.GetEmptyError("NAme")
 	}
 	service, err := s.client.Services(s.CurrentNamespace).Get(
 		context.TODO(),

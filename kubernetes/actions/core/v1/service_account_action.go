@@ -3,6 +3,7 @@ package actions
 import (
 	"context"
 
+	"github.com/andytechcastro/swiss-knife/errors"
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	coreInterface "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -29,10 +30,13 @@ func (sa *ServiceAccount) Namespace(namespace string) *ServiceAccount {
 }
 
 // Get get namespace
-func (sa *ServiceAccount) Get(name string) (*apiv1.ServiceAccount, error) {
+func (sa *ServiceAccount) Get(saName string) (*apiv1.ServiceAccount, error) {
+	if saName == "" {
+		return nil, errors.GetEmptyError("Name")
+	}
 	serviceAccount, err := sa.client.ServiceAccounts(sa.CurrentNamespace).Get(
 		context.TODO(),
-		name,
+		saName,
 		metav1.GetOptions{})
 	if err != nil {
 		return nil, err
@@ -42,6 +46,9 @@ func (sa *ServiceAccount) Get(name string) (*apiv1.ServiceAccount, error) {
 
 // Create Create an ServiceAccount
 func (sa *ServiceAccount) Create(serviceAccount *apiv1.ServiceAccount) error {
+	if serviceAccount == nil {
+		return errors.GetEmptyError("ServiceAccount")
+	}
 	_, err := sa.client.ServiceAccounts(sa.CurrentNamespace).Create(
 		context.TODO(),
 		serviceAccount,
@@ -56,7 +63,7 @@ func (sa *ServiceAccount) Create(serviceAccount *apiv1.ServiceAccount) error {
 // Update Update a pods in the client
 func (sa *ServiceAccount) Update(serviceAccount *apiv1.ServiceAccount) error {
 	if serviceAccount == nil {
-		return errorPodEmpty
+		return errors.GetEmptyError("ServiceAccount")
 	}
 	_, err := sa.client.ServiceAccounts(sa.CurrentNamespace).Update(
 		context.TODO(),
@@ -72,7 +79,7 @@ func (sa *ServiceAccount) Update(serviceAccount *apiv1.ServiceAccount) error {
 // Delete Delete a pod in the client
 func (sa *ServiceAccount) Delete(saName string) error {
 	if saName == "" {
-		return errorNameEmpty
+		return errors.GetEmptyError("Name")
 	}
 	deletePolicy := metav1.DeletePropagationForeground
 	err := sa.client.ServiceAccounts(sa.CurrentNamespace).Delete(

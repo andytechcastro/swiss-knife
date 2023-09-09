@@ -3,6 +3,7 @@ package actions
 import (
 	"context"
 
+	"github.com/andytechcastro/swiss-knife/errors"
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	coreInterface "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -31,7 +32,7 @@ func (p *Pod) Namespace(namespace string) *Pod {
 // Create Create a pods in the client
 func (p *Pod) Create(pod *apiv1.Pod) error {
 	if pod == nil {
-		return errorPodEmpty
+		return errors.GetEmptyError("Pod")
 	}
 	_, err := p.client.Pods(p.CurrentNamespace).Create(
 		context.TODO(),
@@ -48,7 +49,7 @@ func (p *Pod) Create(pod *apiv1.Pod) error {
 // Update Update a pods in the client
 func (p *Pod) Update(pod *apiv1.Pod) error {
 	if pod == nil {
-		return errorPodEmpty
+		return errors.GetEmptyError("Pod")
 	}
 	_, err := p.client.Pods(p.CurrentNamespace).Update(
 		context.TODO(),
@@ -64,7 +65,7 @@ func (p *Pod) Update(pod *apiv1.Pod) error {
 // Delete Delete a pod in the client
 func (p *Pod) Delete(podName string) error {
 	if podName == "" {
-		return errorNameEmpty
+		return errors.GetEmptyError("Name")
 	}
 	deletePolicy := metav1.DeletePropagationForeground
 	err := p.client.Pods(p.CurrentNamespace).Delete(
@@ -83,7 +84,7 @@ func (p *Pod) Delete(podName string) error {
 // Get Get a pod from the client
 func (p *Pod) Get(podName string) (*apiv1.Pod, error) {
 	if podName == "" {
-		return nil, errorNameEmpty
+		return nil, errors.GetEmptyError("Name")
 	}
 	pod, err := p.client.Pods(p.CurrentNamespace).Get(
 		context.TODO(),

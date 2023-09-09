@@ -3,6 +3,7 @@ package actions
 import (
 	"context"
 
+	"github.com/andytechcastro/swiss-knife/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	appsInterface "k8s.io/client-go/kubernetes/typed/apps/v1"
@@ -31,7 +32,7 @@ func (d *ReplicaSet) Namespace(namespace string) *ReplicaSet {
 // Create Create a replicaSet in the client
 func (d *ReplicaSet) Create(replicaSet *appsv1.ReplicaSet) error {
 	if replicaSet == nil {
-		return errorReplicaSetEmpty
+		return errors.GetEmptyError("ReplicaSet")
 	}
 	_, err := d.client.ReplicaSets(d.CurrentNamespace).Create(
 		context.TODO(),
@@ -48,7 +49,7 @@ func (d *ReplicaSet) Create(replicaSet *appsv1.ReplicaSet) error {
 // Update Update a replicaSet in the client
 func (d *ReplicaSet) Update(replicaSet *appsv1.ReplicaSet) error {
 	if replicaSet == nil {
-		return errorReplicaSetEmpty
+		return errors.GetEmptyError("ReplicaSet")
 	}
 	_, err := d.client.ReplicaSets(d.CurrentNamespace).Update(
 		context.TODO(),
@@ -64,7 +65,7 @@ func (d *ReplicaSet) Update(replicaSet *appsv1.ReplicaSet) error {
 // Delete Delete a replicaSet in the client
 func (d *ReplicaSet) Delete(replicaSetName string) error {
 	if replicaSetName == "" {
-		return errorNameEmpty
+		return errors.GetEmptyError("Name")
 	}
 	deletePolicy := metav1.DeletePropagationForeground
 	err := d.client.ReplicaSets(d.CurrentNamespace).Delete(
@@ -83,7 +84,7 @@ func (d *ReplicaSet) Delete(replicaSetName string) error {
 // Get Get a replicaSet from the client
 func (d *ReplicaSet) Get(replicaSetName string) (*appsv1.ReplicaSet, error) {
 	if replicaSetName == "" {
-		return nil, errorNameEmpty
+		return nil, errors.GetEmptyError("Name")
 	}
 	replicaSet, err := d.client.ReplicaSets(d.CurrentNamespace).Get(
 		context.TODO(),

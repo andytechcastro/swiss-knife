@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
+	actionsBatchv1 "github.com/andytechcastro/swiss-knife/kubernetes/actions/batch/v1"
 	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
 	batchv1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/batch/v1"
 	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
@@ -14,7 +15,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func initJob() *actions.Job {
+func initJob() *actionsBatchv1.Job {
 	info := map[string]string{
 		"job1": "nginx",
 		"job2": "apache",
@@ -42,7 +43,7 @@ func initJob() *actions.Job {
 	client := fake.NewSimpleClientset(objects...)
 	objectsDynamic := []runtime.Object{}
 	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtime.NewScheme(), objectsDynamic...)
-	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).Job
+	actions := actions.GetActionFilled(client, dynamicClient, &rest.Config{}).BatchV1.Job
 	actions.Namespace("default")
 	return actions
 }
