@@ -3,7 +3,6 @@ package builders_test
 import (
 	"testing"
 
-	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
 	appsv1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/apps/v1"
 	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
@@ -11,7 +10,7 @@ import (
 )
 
 func initReplicaSet() *appsv1.ReplicaSet {
-	container := builders.NewContainerBuilder()
+	container := corev1.NewContainerBuilder()
 	container.SetName("testContainer").
 		SetImage("nginx").
 		SetTag("1").

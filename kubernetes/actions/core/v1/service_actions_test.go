@@ -5,7 +5,6 @@ import (
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
 	actionsCoreV1 "github.com/andytechcastro/swiss-knife/kubernetes/actions/core/v1"
-	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
 	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -25,7 +24,7 @@ func initServices() *actionsCoreV1.Service {
 	objects := []runtime.Object{}
 	for name, namespace := range info {
 		service := corev1.NewServiceBuilder(name)
-		ports := builders.Ports{
+		ports := corev1.Ports{
 			Protocol:   "TCP",
 			Port:       80,
 			TargetPort: intstr.FromInt(8080),
@@ -66,7 +65,7 @@ func TestUpdateService(t *testing.T) {
 func TestCreateService(t *testing.T) {
 	actions := initServices()
 	service := corev1.NewServiceBuilder("service5")
-	ports := builders.Ports{
+	ports := corev1.Ports{
 		Protocol:   "TCP",
 		Port:       80,
 		TargetPort: intstr.FromInt(8080),
@@ -85,7 +84,7 @@ func TestCreateService(t *testing.T) {
 func TestCreateServiceFailed(t *testing.T) {
 	actions := initServices()
 	service := corev1.NewServiceBuilder("service5")
-	ports := builders.Ports{
+	ports := corev1.Ports{
 		Protocol:   "TCP",
 		Port:       80,
 		TargetPort: intstr.FromInt(8080),

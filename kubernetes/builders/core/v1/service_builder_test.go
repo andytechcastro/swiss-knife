@@ -3,7 +3,6 @@ package builders_test
 import (
 	"testing"
 
-	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
 	builderCorev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
@@ -21,7 +20,7 @@ func initService() *builderCorev1.Service {
 func TestBuildServiceClusterIP(t *testing.T) {
 	service := initService()
 	service.Selector = map[string]string{"service": ServiceName}
-	ports := builders.NewServicePort()
+	ports := builderCorev1.NewServicePort()
 	ports.SetProtocol("TCP").
 		SetPort(80).
 		SetTargetPort(8080)
@@ -59,7 +58,7 @@ func TestServiceEmptyValue(t *testing.T) {
 
 func TestServiceToYaml(t *testing.T) {
 	service := initService()
-	ports := builders.Ports{
+	ports := builderCorev1.Ports{
 		Protocol:   "TCP",
 		Port:       80,
 		TargetPort: intstr.FromInt(8080),

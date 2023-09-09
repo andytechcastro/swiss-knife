@@ -5,7 +5,6 @@ import (
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
 	actionsCoreV1 "github.com/andytechcastro/swiss-knife/kubernetes/actions/core/v1"
-	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
 	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -24,7 +23,7 @@ func initPod() *actionsCoreV1.Pod {
 	objects := []runtime.Object{}
 	for name, image := range info {
 		pod := corev1.NewPodBuilder(name)
-		container := builders.NewContainerBuilder()
+		container := corev1.NewContainerBuilder()
 		container.SetName("testContainer").
 			SetImage(image).
 			SetTag("1").
@@ -54,7 +53,7 @@ func TestGetPod(t *testing.T) {
 func TestCreatePod(t *testing.T) {
 	actions := initPod()
 	pod := corev1.NewPodBuilder("service5")
-	container := builders.NewContainerBuilder()
+	container := corev1.NewContainerBuilder()
 	container.SetName("testContainer").
 		SetImage("java").
 		SetTag("3").

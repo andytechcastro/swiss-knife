@@ -5,7 +5,6 @@ import (
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
 	actionsBatchv1 "github.com/andytechcastro/swiss-knife/kubernetes/actions/batch/v1"
-	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
 	batchv1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/batch/v1"
 	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
@@ -25,7 +24,7 @@ func initCronJob() *actionsBatchv1.CronJob {
 	objects := []runtime.Object{}
 	for name, image := range info {
 		cronJob := batchv1.NewCronJobBuilder(name)
-		container := builders.NewContainerBuilder()
+		container := corev1.NewContainerBuilder()
 		container.SetName("testContainer").
 			SetImage(image).
 			SetTag("1").
@@ -62,7 +61,7 @@ func TestGetCronJob(t *testing.T) {
 func TestCreateCronJob(t *testing.T) {
 	actions := initCronJob()
 	cronJob := batchv1.NewCronJobBuilder("cronJob5")
-	container := builders.NewContainerBuilder()
+	container := corev1.NewContainerBuilder()
 	container.SetName("testContainer").
 		SetImage("java").
 		SetTag("3").

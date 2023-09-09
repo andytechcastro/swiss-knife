@@ -5,7 +5,6 @@ import (
 
 	"github.com/andytechcastro/swiss-knife/kubernetes/actions"
 	actionsAppsV1 "github.com/andytechcastro/swiss-knife/kubernetes/actions/apps/v1"
-	"github.com/andytechcastro/swiss-knife/kubernetes/builders"
 	appsv1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/apps/v1"
 	corev1 "github.com/andytechcastro/swiss-knife/kubernetes/builders/core/v1"
 	"github.com/stretchr/testify/assert"
@@ -25,7 +24,7 @@ func initReplicaSet() *actionsAppsV1.ReplicaSet {
 	objects := []runtime.Object{}
 	for name, image := range info {
 		replicaSet := appsv1.NewReplicaSetBuilder(name)
-		container := builders.NewContainerBuilder()
+		container := corev1.NewContainerBuilder()
 		container.SetName("testContainer").
 			SetImage(image).
 			SetTag("1").
@@ -59,7 +58,7 @@ func TestGetReplicaSet(t *testing.T) {
 func TestCreateReplicaSet(t *testing.T) {
 	actions := initReplicaSet()
 	replicaSet := appsv1.NewReplicaSetBuilder("replicaset5")
-	container := builders.NewContainerBuilder()
+	container := corev1.NewContainerBuilder()
 	container.SetName("testContainer").
 		SetImage("java").
 		SetTag("3").
